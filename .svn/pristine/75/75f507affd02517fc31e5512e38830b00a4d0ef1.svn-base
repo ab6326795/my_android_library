@@ -1,0 +1,68 @@
+package com.pwdgame.media;
+
+import android.content.Context;
+import android.media.AudioManager;
+
+import com.pwdgame.constant.Keys;
+import com.pwdgame.util.SharedPreferenceUtil;
+
+public class CMIDIManager {
+
+	/**
+	 * 获取当前音量状态
+	 * @param mContext
+	 * @return 如果音乐已经打开true，否则false
+	 */
+	public static boolean getAudioState(Context mContext){
+		boolean b=false;
+		AudioManager audioManager=(AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
+		int icur=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+	
+		if(icur>0){
+		    b=true;
+		}
+		return b;
+	}
+	/**
+	 * 设置值当前音乐开关
+	 * @param mContext
+	 * @param on 
+	 * 如果为true,则尝试从配置文件读取原先保存好的音量大小，否则将音量设为1
+	 * 如果为false,则先将当前音量保存，然后将音量设置为0
+	 */
+	public static void setAudioVolume(Context mContext,boolean on){
+		AudioManager audioManager=(AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
+		if(on){
+			int oldVolume=SharedPreferenceUtil.getRecordInteger(Keys.VOLUME);
+			if(oldVolume<=0)
+				oldVolume=1;						
+			audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, oldVolume, 0);			
+		}else {			
+			int iCurVolume=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+			//保存当前音量
+			SharedPreferenceUtil.setRecordInteger(Keys.VOLUME, iCurVolume);
+			//设为静音
+			audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+		}
+	}
+	/**
+	 * 手动设置音量大小，当value为0则静音，否则。。
+	 * @param mContext
+	 * @param on
+	 * @param value
+	 */
+	public static void setAudioVolume(Context mContext,boolean on,int value){
+		AudioManager audioManager=(AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
+		if(on){
+			if(value<=0)
+				value=1;
+			audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, value, 0);		   
+		}else {			
+			int iCurVolume=audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+			//保存当前音量
+			SharedPreferenceUtil.setRecordInteger(Keys.VOLUME, iCurVolume);
+			//设置为静音
+			audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+		}
+	}
+}

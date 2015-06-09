@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+	<ListView
+	      android:id="@+id/actionbarview_content_listview"  
+		  android:layout_width="fill_parent"
+		  android:layout_height="wrap_content" 
+	      android:cacheColorHint="@color/transparent"
+	      android:scrollbars="none"
+	      android:divider="@drawable/list_divider_holo_light"
+	      android:fadingEdge="none"   
+	      android:listSelector="@drawable/item_selector"
+	      />   
+</LinearLayout>      

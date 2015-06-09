@@ -1,0 +1,18 @@
+package com.pwdgame.bean.http;
+
+public class BaseModel {
+
+	public int retCode;
+	public String retMsg;
+	
+	/**是否是缓存数据*/
+	public boolean isCache;	
+
+	public Object reserve1;
+	
+	@Override
+	public String toString() {
+		return "BaseModel [retCode=" + retCode + ", retMsg=" + retMsg
+				+ ", isCache=" + isCache + "]";
+	}
+}

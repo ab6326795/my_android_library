@@ -1,0 +1,71 @@
+package com.pwdgame.http.parser;
+
+import android.content.Context;
+import android.util.Log;
+
+import com.alibaba.fastjson.JSONObject;
+import com.pwdgame.bean.http.BaseModel;
+import com.pwdgame.cache.XYFileCache;
+import com.pwdgame.library.BuildConfig;
+
+public class HttpParserImpl implements IHttpParser{
+
+	public BaseModel parseObject(Context mContext,boolean netNotAvailableApplyCache,String url,
+			String json,Class outputClass) {
+		BaseModel tmp=null;
+		boolean isCache=false;
+		boolean isCacheSet=false;
+		
+
+		if(BuildConfig.DEBUG)
+		    Log.e("服务器返回：", json+"");
+		
+		/**网络不可用返回数据为null，是否使用缓存*/
+		if(json==null&&netNotAvailableApplyCache){
+			json=XYFileCache.getUrlCache(mContext, url,false);
+			isCache=true;
+			
+			if(BuildConfig.DEBUG){
+			   Log.e("HttpUtils", "使用缓存:"+json);
+			}
+	    }
+		
+		if(json!=null){
+           try {
+	
+        	    tmp=JSONObject.parseObject(json,outputClass);
+        	   
+				tmp.isCache=isCache;	
+
+		    	//没有设置缓存，并且缓存可用就保存缓存
+				if(!isCacheSet&&tmp!=null&&tmp.retCode==1){		
+					XYFileCache.setUrlCache(mContext, json,url);						
+					if(BuildConfig.DEBUG){
+					   Log.e("HttpUtils", "保存缓存"+json);
+					}
+			    }
+           }catch(Exception e){
+        	   //当服务器返回的数据不合法，解析就会报错
+        	   if(BuildConfig.DEBUG){
+        		   e.printStackTrace();
+        	   }
+        	   tmp=new BaseModel();
+        	   tmp.retCode=0;
+        	   tmp.retMsg="服务器异常！";
+        	   tmp.isCache=false;
+           }
+
+		}
+
+		return tmp;
+
+	}
+
+	@Override
+	public BaseModel parseObject(Context mContext,
+			boolean netNotAvailableApplyCache, String url, String json) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

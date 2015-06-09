@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" 
+    >
+    <Button 
+	     android:id="@+id/xypoplist_item_button"
+	     android:layout_width="fill_parent"
+	     android:layout_height="wrap_content"
+	     android:padding="10dp"
+	     android:text=""
+	     android:textColor="@color/black"
+	     android:textSize="@dimen/little_title_size"
+	     android:background="@drawable/button_gray_white_selector"
+	     android:layout_marginTop="15dp"
+	     />
+    
+</RelativeLayout>

@@ -1,0 +1,10 @@
+package com.pwdgame.http;
+
+import com.pwdgame.bean.http.BaseModel;
+
+public interface IHttpEvenResult<T extends BaseModel>  {
+
+	public void onFailedEvent(int retCode,String str);
+	
+	public void onSuccessEvent(T t);
+}

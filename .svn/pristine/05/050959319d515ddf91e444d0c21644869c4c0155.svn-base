@@ -1,0 +1,298 @@
+package com.pwdgame.http;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Map;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+
+import android.util.Log;
+
+import com.loopj.android.http.SyncHttpClient;
+import com.pwdgame.library.BuildConfig;
+
+/**
+ * 实现Http请求的封装发送
+ * 
+ * @author admin
+ * 
+ */
+public class XYHttpConnection {
+
+
+	/**
+	 * 发起Http Post 请求
+	 * 
+	 * @param url
+	 *            请求URL
+	 * @return 返回响应实体byte[]
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @throws HttpResponseException
+	 */
+	public byte[] doPost(String url) throws ClientProtocolException,
+			IOException, HttpResponseException {
+		HttpPost _httpPost = new HttpPost(url);
+		return getResponse(_httpPost);
+	}
+
+	/**
+	 * 发起Http Get 请求
+	 * @param url 请求URL
+	 * @return 返回响应实体byte[]
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @throws HttpResponseException
+	 */
+	public byte[] doGet(String url) throws ClientProtocolException,
+		    IOException, HttpResponseException {
+		HttpGet _httpGet = new HttpGet(url);
+		return getResponse(_httpGet);
+	}
+	
+
+	/**
+	 * 发起Http Post请求
+	 * 
+	 * @param url
+	 *            请求URL
+	 * @param postPair
+	 *            请求参数
+	 * @return 返回响应的实体byte[]
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @throws HttpResponseException
+	 */
+	public byte[] doPost(String url, Map<String, String> postPair)
+			throws ClientProtocolException, IOException, HttpResponseException {
+		HttpPost _httpPost = new HttpPost(url);
+		if (postPair != null && postPair.size() > 0) {
+			ArrayList<NameValuePair> _list = new ArrayList<NameValuePair>();
+			try {
+				for (String s : postPair.keySet()) {
+					//Log.e("参数："+s, postPair.get(s));
+					_list.add(new BasicNameValuePair(s, postPair.get(s)));
+				}
+				if(BuildConfig.DEBUG){
+					Log.e("Http请求Entity", ""+_list.toString());
+				}
+				_httpPost.setEntity(new UrlEncodedFormEntity(_list, "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return getResponse(_httpPost);
+	}
+
+	/**
+	 * 检查响应内容
+	 * 
+	 * @param response
+	 *            HttpResponse
+	 * @return 如果响应内容为null 或者 内容为wml（404等一般都是wml..），则返回false。否则返回true
+	 */
+	private boolean checkResponseEntity(HttpResponse response) {
+		if (response == null)
+			return false;
+		if (response.getEntity().getContentLength() == 0
+				|| (response.getEntity().getContentType() != null && response
+						.getEntity().getContentType().getValue()
+						.contains("wml"))) {
+			return false;
+		}
+		return true;
+	}
+
+
+	/**
+	 * 发起请求，返回响应内容
+	 * 
+	 * @param httpUriRequest
+	 *            请求对象
+	 * @return byte[]
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @throws HttpResponseException
+	 */
+	private byte[] getResponse(HttpUriRequest httpUriRequest)
+			throws ClientProtocolException, IOException, HttpResponseException {
+		
+		// 这里返回的HttpClient只能用于HTTP请求，HTTPS还需要对证书做一番处理
+		SyncHttpClient mSyncHttpClient=new SyncHttpClient();				
+		HttpClient client=mSyncHttpClient.getHttpClient();//HttpClientHelper.getHttpClient();			
+				
+		if(client==null)
+			return null;
+		HttpResponse response = client.execute(httpUriRequest);
+		
+		byte[] responseData = null;
+		int resultCode = 0;
+		if (response != null)
+			resultCode = response.getStatusLine().getStatusCode();
+
+		// 响应成功，返回byte[]
+		if (response != null && resultCode == HttpStatus.SC_OK) {
+			/*Header[] headers = response.getHeaders("Content-Length");  
+            if (headers.length > 0) 
+            {
+                int size = Integer.parseInt(headers[0].getValue());
+                //文件大小相同
+                size++;
+            }*/
+			responseData = EntityUtils.toByteArray(response.getEntity());
+		}
+
+		if (response == null) {
+			throw new HttpResponseException(resultCode, "http response is null");
+		}
+		if (responseData == null) {
+
+			throw new HttpResponseException(resultCode, "http connect error : "
+					+ resultCode);
+		}
+
+		return responseData;
+	}
+	/**
+	 * 使用POST方法上传文件
+	 * 如：http://www.baidu.com
+	 * 参数：远程地址URL、文件路径、文件MIME
+	 * 失败返回null，成功非null
+	 *  audio/amr
+	 */
+	public static String uploadFile(String hostUrl,String filePath,String fileMime){
+		
+		File file=new File(filePath);
+		String fileName=file.getName();
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		byte[] buffer=new byte[10240];
+		
+		int read=0;
+		//读取文件，写入文件数据	
+		DataInputStream dis=null;
+		
+		try {
+			dis=new DataInputStream(new FileInputStream(file));
+			while((read=dis.read(buffer))!=-1){
+				os.write(buffer);
+			}
+			dis.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally{
+			if(dis!=null)
+				try {
+					dis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		
+		
+		return uploadFile(hostUrl, os.toByteArray(), fileName, fileMime);
+	}
+	/**
+	 * 使用POST方法上传文件
+	 * 如：http://www.baidu.com
+	 * 参数：远程地址URL、文件路径、文件MIME
+	 * 失败返回null，成功非null
+	 *  audio/amr
+	 */
+	public static String uploadFile(String hostUrl,byte[] fileByte,String fileName,String fileMime){
+		String response="";
+		HttpURLConnection conn=null;
+		
+		//文件类型
+		String multipart_form_data="multipart/form-data";
+		//连字符，在文件数据开始和结束多添加2个--
+		String twoHyphens="--";
+		//数据分界线
+		String boundary="---------------------------147642088510974";
+		/*回车换行,不要随便用 \n\r    \n    \r，因为他们在不同操作系统有不同的表示。
+		如果在java代码中把它们写死了，那么java跨平台运行的特性就没有了。
+		*/
+		String lineEnd=System.getProperty("line.separator");
+		
+		try {
+			conn=(HttpURLConnection)new URL(hostUrl).openConnection();
+			//设置能否输入和输出
+			conn.setDoInput(true);
+			conn.setDoOutput(true);
+			//设置请求方式
+			conn.setRequestMethod("POST");
+			//设置是否使用缓存
+			conn.setUseCaches(false);
+			//设置连接超时,读取超时时间(毫秒)
+			conn.setConnectTimeout(10000);
+			conn.setReadTimeout(10000);
+			
+			// 配置本次连接的Content-type，二进制未压缩数据
+			conn.setRequestProperty("Content-Type", multipart_form_data+"; boundary="+boundary);
+			//连接
+			conn.connect();
+				
+
+			byte[] buffer=new byte[10240];
+			/////////
+			StringBuilder sb=new StringBuilder();
+			sb.append("Content-Disposition: form-data; name=\"file1\"; filename=\""+fileName+"\""+lineEnd);
+			sb.append("Content-Type: "+fileMime+lineEnd);
+			sb.append(lineEnd);
+			
+			DataOutputStream output=new DataOutputStream(conn.getOutputStream());
+			//写入文件头,和数据起始标志
+			output.writeBytes(sb.toString());
+
+			//写入文件数据
+			output.write(fileByte);
+			
+			//换行符
+			output.writeBytes(lineEnd);
+			//写入数据结束标志
+			output.writeBytes(twoHyphens+boundary+twoHyphens+lineEnd);			
+			output.flush();
+			output.close();
+			
+			String temp="";
+			BufferedReader reader=new BufferedReader(new InputStreamReader(conn.getInputStream(),"utf-8"));
+			if(conn.getResponseCode()==200){
+				while((temp=reader.readLine())!=null)
+				{
+					response+=temp;
+				}
+			}
+			reader.close();
+			
+		} catch (Exception e) {
+			response=null;			
+		}
+		finally{
+			if(conn!=null)
+				conn.disconnect();
+		}
+		return response;
+	}
+}

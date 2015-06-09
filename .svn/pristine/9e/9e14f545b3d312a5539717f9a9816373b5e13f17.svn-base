@@ -1,0 +1,144 @@
+package com.pwdgame.util;
+
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+
+
+public class ViewUtils {	
+
+	//填充矩形
+		public static void fillRect(Canvas canvas,Rect rect,Paint paint)
+		{
+			paint.setStyle(Paint.Style.FILL);
+			canvas.drawRect(rect, paint);
+		}
+		public static void fillRect(Canvas canvas,int x,int y,int w,int h,Paint paint)
+		{
+			paint.setStyle(Paint.Style.FILL);
+			canvas.drawRect(x, y,x+w,y+h, paint);
+		}	
+		//绘制矩形，不填充
+		public static void drawRect(Canvas canvas,Rect rect,Paint paint)
+		{
+			paint.setStyle(Paint.Style.STROKE);
+			canvas.drawRect(rect, paint);
+		}
+		public static void drawRect(Canvas canvas,int x,int y,int w,int h,Paint paint)
+		{
+			paint.setStyle(Paint.Style.STROKE);
+			canvas.drawRect(x,y,x+w,y+h, paint);
+		}
+		//设置Rect大小
+		public static void setRect(Rect rect,int x,int y,int w,int h)
+		{
+			rect.left=x;
+			rect.top=y;
+			rect.right=x+w;
+			rect.bottom=y+h;
+		}
+		/**
+		 * 绘制图片(可绘制局部)
+		 * @param x屏幕上的坐标x
+		 * @param y屏幕上的坐标y
+		 * @param sx图片上的x
+		 * @param sy图片上的y
+		 * @param w要绘制的图片宽度
+		 * @param h要绘制的图片高度
+		 * 
+		 * @return null
+		 */
+		public static void drawImage(Canvas canvas,Bitmap bitmap,int x,int y,int sx,int sy,int w,int h)
+		{
+			Rect src=new Rect();
+			Rect des=new Rect();
+			
+			src.left=sx;
+			src.top=sy;
+			src.right=sx+w;
+			src.bottom=sy+h;
+			
+			des.left=x;
+			des.top=y;
+			des.right=x+w;
+			des.bottom=y+h;
+			
+			canvas.drawBitmap(bitmap, src,des,null);
+			src=null;
+			des=null;
+		}
+		/**
+		 * 绘制图片(可绘制局部)
+		 * @param x屏幕上的坐标x
+		 * @param y屏幕上的坐标y
+		 * @param sx图片上的x
+		 * @param sy图片上的y
+		 * @param w要绘制的图片宽度
+		 * @param h要绘制的图片高度
+		 * 
+		 * @return null
+		 */
+		public static void drawImage(Canvas canvas,Bitmap bitmap,int dx,int dy,int dw,int dh,int sx,int sy,int sw,int sh)
+		{
+			Rect src=new Rect();
+			Rect des=new Rect();
+			
+			src.left=sx;
+			src.top=sy;
+			src.right=sx+sw;
+			src.bottom=sy+sh;
+			
+			des.left=dx;
+			des.top=dy;
+			des.right=dx+dw;
+			des.bottom=dy+dh;
+			
+			canvas.drawBitmap(bitmap, src,des,null);
+			src=null;
+			des=null;
+		}
+		
+		/**
+		 * 绘制图片（绘制全部）
+		 */
+		public static void drawImage(Canvas canvas,Bitmap bitmap,float x,float y,Paint mPaint)
+		{		
+			canvas.drawBitmap(bitmap, x,y,mPaint);
+		}
+		/**
+		 * 绘制图片到屏幕中间
+		 * @return null
+		 */
+		public static void drawImageToCenter(Canvas canvas,Bitmap bitmap,int screenW,int screenH,Paint paint)
+		{
+			int w=bitmap.getWidth();
+			int h=bitmap.getHeight();
+			int x=(screenW-w)/2;
+			int y=(screenH-h)/2;
+			canvas.drawBitmap(bitmap, x,y,paint);
+		}
+		
+		/**
+		 * 绘制文字
+		 */
+		public static void drawString(Canvas canvas,String str,float x,float y,Paint paint)
+		{
+			canvas.drawText(str, x, y+paint.getTextSize(), paint);
+		}
+		/**
+		 * 绘制文字于屏幕X中央
+		 */
+		public static void drawStringToXCenter(Canvas canvas,String str,int screenW,float y,Paint paint)
+		{
+			canvas.drawText(str, (screenW-paint.measureText(str))/2, y+paint.getTextSize(), paint);
+		}
+		/**
+		 * 绘制文字于屏幕XY中央
+		 */
+		public static void drawStringToCenter(Canvas canvas,String str,int screenW,int screenH,Paint paint)
+		{
+			canvas.drawText(str, (screenW-paint.measureText(str))/2, 
+					        (screenH-paint.getTextSize())/2+paint.getTextSize(), paint);
+		}
+}

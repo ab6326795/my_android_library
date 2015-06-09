@@ -1,0 +1,151 @@
+package com.pwdgame.media;
+
+import android.content.Context;
+import android.media.MediaPlayer;
+import android.net.Uri;
+/*
+ * 音频播放类
+ */
+public class CMIDIPlayer {
+
+	private static CMIDIPlayer _payer=new CMIDIPlayer();
+	
+	private MediaPlayer mediaPlayer;
+	private int loopNumber; //播放次数
+	private int currentNumber; //当前已经播放的次数
+	
+	private CMIDIPlayer(){}
+	
+	/**
+	 * 返回播放器实例
+	 * @return
+	 */
+	public static CMIDIPlayer getInstance(){
+		return _payer;
+	}
+	
+	/**
+	 * 播放指定资源的音频文件
+	 * @param resId 资源ID
+	 * @param loopNumber 播放次数（当为0时，循环播放）
+	 */
+	public void PlayMusic(Context mContext,int resId,int loopNumber)
+	{
+		if(loopNumber<0)
+			return;
+		//释放Mediaplayer
+		StopMusic();
+
+		//装载音乐
+		mediaPlayer=MediaPlayer.create(mContext, resId);
+		
+		if(mediaPlayer!=null)
+		{
+			//设置循环
+			if(loopNumber==0){
+			  mediaPlayer.setLooping(true);
+			  mediaPlayer.setOnCompletionListener(null);
+			}
+			else {
+				this.loopNumber=loopNumber;
+				this.currentNumber=0;
+				mediaPlayer.setOnCompletionListener(musicCompletionListener);
+			}
+			/*try {
+				//准备
+				mediaPlayer.prepare();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}*/
+			//开始播放
+			mediaPlayer.start();
+		}
+		
+	}
+	
+	public void PlayMusic(Context mContext,Uri uri,int loopNumber){
+		if(loopNumber<0)
+			return;
+		//释放Mediaplayer
+		StopMusic();
+
+		//装载音乐
+		mediaPlayer=MediaPlayer.create(mContext, uri);		
+		if(mediaPlayer!=null)
+		{
+			//设置循环
+			if(loopNumber==0){
+			  mediaPlayer.setLooping(true);
+			  mediaPlayer.setOnCompletionListener(null);
+			}
+			else {
+				this.loopNumber=loopNumber;
+				this.currentNumber=0;
+				mediaPlayer.setOnCompletionListener(musicCompletionListener);
+			}
+	/*		try {
+				//准备
+				mediaPlayer.prepare();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}*/
+			//开始播放
+			mediaPlayer.start();
+		}
+	}
+	
+	private MediaPlayer.OnCompletionListener musicCompletionListener =new MediaPlayer.OnCompletionListener() {
+		
+		@Override
+		public void onCompletion(MediaPlayer mp) {
+			++currentNumber;
+			if(loopNumber>currentNumber){
+				mediaPlayer.seekTo(0);
+				mediaPlayer.start();
+			}
+		}
+	};
+	
+	/**
+	 * 暂停音乐
+	 */
+	public void PauseMusic()
+	{
+		if(mediaPlayer!=null&&mediaPlayer.isPlaying())
+		{
+			mediaPlayer.pause();
+		}
+	}
+	/**
+	 * 继续音乐
+	 */
+	public void ResumeMusic()
+	{
+		if(mediaPlayer!=null&&!mediaPlayer.isPlaying())
+		{
+			mediaPlayer.start();
+		}
+	}
+	/**
+	 * 停止音乐，释放资源
+	 */
+	public void StopMusic()
+	{
+		if(mediaPlayer!=null)
+		{
+			mediaPlayer.stop();
+			mediaPlayer.release();
+			mediaPlayer=null;
+		}
+	}
+	
+	/**
+	 * 音乐是否在播放中
+	 * @return
+	 */
+	public boolean isPlaying(){
+		if(mediaPlayer!=null&&mediaPlayer.isPlaying())
+			return true;
+		return false;
+	}
+}

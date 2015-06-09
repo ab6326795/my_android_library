@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"     
+    >
+    <LinearLayout 
+        android:id="@+id/xypoplist_bottom_linear"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        >
+        <ListView
+              android:id="@+id/xypoplist_listview"
+		      android:layout_width="fill_parent"  
+		      android:layout_height="wrap_content"  
+		      android:cacheColorHint="@color/transparent"
+		      android:scrollbars="none"
+		      android:divider="@null"		      
+		      android:fadingEdge="none"   
+		      
+		      />  
+        <Button 
+             android:id="@+id/xypoplist_cancel"
+		     android:layout_width="fill_parent"
+		     android:layout_height="wrap_content"
+		     android:padding="10dp"
+		     android:text="@string/cancel"
+		     android:textColor="@color/white"
+		     android:textSize="@dimen/little_title_size"
+		     android:background="@drawable/button_red_selector"
+		     android:layout_marginBottom="10dp"
+		     android:layout_marginTop="15dp"
+		     />
+    </LinearLayout>
+  
+</RelativeLayout>

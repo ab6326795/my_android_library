@@ -1,0 +1,235 @@
+package com.pwdgame.http;
+
+import org.apache.http.Header;
+
+import android.content.Context;
+import android.util.Log;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.pwdgame.bean.http.BaseModel;
+import com.pwdgame.cache.XYFileCache;
+import com.pwdgame.http.parser.HttpParserImpl;
+import com.pwdgame.http.parser.IHttpParser;
+import com.pwdgame.library.BuildConfig;
+/**
+ * 异步Http请求类
+ * @author 谢源
+ *
+ */
+public class XYAsyncHttpRequest {
+
+	private static final String TAG=XYAsyncHttpRequest.class.getName();
+	private static final int GET=0;
+	private static final int POST=1;
+	
+    private AsyncHttpClient client = new AsyncHttpClient();
+    private IHttpResponse mIHttpResponse;
+
+    private IHttpParser mHttpParser;
+    private Context mContext;
+    
+    public XYAsyncHttpRequest(Context mContext){
+    	this.mContext=mContext;
+    	this.mHttpParser=new HttpParserImpl();
+    }
+    public XYAsyncHttpRequest(Context mContext,IHttpParser parser){
+    	this.mContext=mContext;
+    	this.mHttpParser=parser;
+    }
+    
+    /**
+     * 发起GET请求
+     * @param url 请求地址
+     * @param netNotAvailableApplyCache 网络不可用是否使用缓存
+     * @param params 请求参数
+     * @param httpResponse 回调
+     */
+    public  void get(String url,Class outputClass,boolean netNotAvailableApplyCache,IHttpResponse httpResponse) {
+    	requestDate(url,outputClass, netNotAvailableApplyCache,false,null, httpResponse, GET);
+    }
+    
+    /**
+     * 发起GET请求
+     * @param url 请求地址
+     * @param netNotAvailableApplyCache 网络不可用是否使用缓存
+     * @param params 请求参数
+     * @param httpResponse 回调
+     */
+    public  void get(String url,boolean netNotAvailableApplyCache,IHttpResponse httpResponse) {
+    	requestDate(url,null, netNotAvailableApplyCache,false,null, httpResponse, GET);
+    }
+    /**
+     * 发起GET请求
+     * @param url  请求地址
+     * @param netNotAvailableApplyCache 网络不可用是否使用缓存
+     * @param ApplyTimeCache 是否直接读取定时缓存
+     * @param params 请求参数
+     * @param httpResponse 回调
+     */
+    public  void get(String url,Class outputClass,boolean netNotAvailableApplyCache,boolean ApplyTimeCache,  RequestParams params,IHttpResponse httpResponse) {
+    	requestDate(url,outputClass, netNotAvailableApplyCache, ApplyTimeCache, params, httpResponse, GET);
+    }
+    /**
+     * 发起GET请求
+     * @param url  请求地址
+     * @param netNotAvailableApplyCache 网络不可用是否使用缓存
+     * @param ApplyTimeCache 是否直接读取定时缓存
+     * @param params 请求参数
+     * @param httpResponse 回调
+     */
+    public  void get(String url,boolean netNotAvailableApplyCache,boolean ApplyTimeCache,  RequestParams params,IHttpResponse httpResponse) {
+    	requestDate(url,null, netNotAvailableApplyCache, ApplyTimeCache, params, httpResponse, GET);
+    }
+    /**
+     * 发起POST请求
+     * @param url 请求地址
+     * @param netNotAvailableApplyCache 网络不可用是否使用缓存
+     * @param params 请求参数
+     * @param httpResponse 回调
+     */
+    public void post(String url,Class outputClass,boolean netNotAvailableApplyCache, RequestParams params, IHttpResponse httpResponse) {
+    	requestDate(url,outputClass, netNotAvailableApplyCache, false, params, httpResponse, POST);
+    }
+    /**
+     * 发起POST请求
+     * @param url 请求地址
+     * @param netNotAvailableApplyCache 网络不可用是否使用缓存
+     * @param params 请求参数
+     * @param httpResponse 回调
+     */
+    public void post(String url,boolean netNotAvailableApplyCache, RequestParams params, IHttpResponse httpResponse) {
+    	requestDate(url,null, netNotAvailableApplyCache, false, params, httpResponse, POST);
+    }
+    /**
+     * 发起POST请求
+     * @param url  请求地址
+     * @param netNotAvailableApplyCache 网络不可用是否使用缓存
+     * @param ApplyTimeCache 是否直接读取定时缓存
+     * @param params 请求参数
+     * @param httpResponse 回调
+     */
+    public void post(String url,Class outputClass,boolean netNotAvailableApplyCache,boolean ApplyTimeCache, RequestParams params, IHttpResponse httpResponse) {
+    	requestDate(url, outputClass,netNotAvailableApplyCache, ApplyTimeCache, params, httpResponse, POST);       
+    }
+    /**
+     * 发起POST请求
+     * @param url  请求地址
+     * @param netNotAvailableApplyCache 网络不可用是否使用缓存
+     * @param ApplyTimeCache 是否直接读取定时缓存
+     * @param params 请求参数
+     * @param httpResponse 回调
+     */
+    public void post(String url,boolean netNotAvailableApplyCache,boolean ApplyTimeCache, RequestParams params, IHttpResponse httpResponse) {
+    	requestDate(url, null,netNotAvailableApplyCache, ApplyTimeCache, params, httpResponse, POST);       
+    }
+    /**
+     * 设置请求超时
+     * @param timeout
+     */
+    public void setTimeOut(int timeout){
+    	client.setTimeout(timeout);
+    }
+    
+    /**
+     * 取消任务
+     * @param mContext
+     */
+    public void cancel(Context mContext){    	;
+    	client.cancelRequests(mContext, true);
+    }
+    
+    /**
+     * 请求数据
+     * @param url
+     * @param netNotAvailableApplyCache
+     * @param ApplyTimeCache
+     * @param params
+     * @param httpResponse
+     * @param method
+     */
+    private void requestDate(String url,Class outputClass,boolean netNotAvailableApplyCache,boolean ApplyTimeCache,
+    		RequestParams params, IHttpResponse httpResponse,int method){
+    	this.mIHttpResponse=httpResponse;
+    	
+    	String json=null;
+    	if(BuildConfig.DEBUG){    		
+    		Log.e(TAG, "请求参数："+params!=null? params.toString():"");
+    	}
+    	
+    	if(ApplyTimeCache){
+    		json=XYFileCache.getUrlCache(mContext, url, ApplyTimeCache);
+    		if(json!=null){
+    			BaseModel baseModel=null;
+    			if(outputClass==null){
+    				baseModel=mHttpParser.parseObject(mContext,netNotAvailableApplyCache,url,json,outputClass);
+    			}else{
+    				baseModel=mHttpParser.parseObject(mContext,netNotAvailableApplyCache,url,json);
+    			}
+    			
+    			this.mIHttpResponse.onFinish(baseModel);
+    			if(BuildConfig.DEBUG){
+    				Log.e(TAG, "使用定时缓存");
+    			}
+    		    return;    			 
+    		}
+    	}
+		//不使用定期缓存，则从网络上拉取
+		if(method==POST){
+			 client.post(url, params,new XYAsyncHttpResponseHandler(url,outputClass, netNotAvailableApplyCache));
+		}else{
+			if(params!=null){
+				client.get(url, params,new XYAsyncHttpResponseHandler(url,outputClass, netNotAvailableApplyCache));
+			}else{
+				client.get(url,new XYAsyncHttpResponseHandler(url, outputClass,netNotAvailableApplyCache));
+			}
+		}
+    	
+    }
+    
+    private class XYAsyncHttpResponseHandler extends AsyncHttpResponseHandler{
+
+    	private String url;
+    	private Class outputClass;
+    	private boolean netNotAvailableApplyCache;
+
+    	public XYAsyncHttpResponseHandler(String url,Class outputClass,boolean netNotAvailableApplyCache){    		
+    		this.url=url;
+    		this.outputClass=outputClass;
+    		this.netNotAvailableApplyCache=netNotAvailableApplyCache;
+    	}
+    	
+		@Override
+		public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
+			if(mIHttpResponse!=null){
+				String str=arg2==null? null:new String(arg2);
+				BaseModel baseModel=null;
+    			if(outputClass==null){
+    				baseModel=mHttpParser.parseObject(mContext,netNotAvailableApplyCache,url,str,outputClass);
+    			}else{
+    				baseModel=mHttpParser.parseObject(mContext,netNotAvailableApplyCache,url,str);
+    			}
+			
+				mIHttpResponse.onFinish(baseModel);
+			}
+		}
+		
+		@Override
+		public void onFailure(int arg0, Header[] arg1, byte[] arg2, Throwable arg3) {
+			if(mIHttpResponse!=null){
+				String str=arg2==null? null:new String(arg2);
+				
+				BaseModel baseModel=null;
+    			if(outputClass==null){
+    				baseModel=mHttpParser.parseObject(mContext,netNotAvailableApplyCache,url,str,outputClass);
+    			}else{
+    				baseModel=mHttpParser.parseObject(mContext,netNotAvailableApplyCache,url,str);
+    			}
+
+				mIHttpResponse.onFinish(baseModel);
+			}
+		}
+    }
+
+}

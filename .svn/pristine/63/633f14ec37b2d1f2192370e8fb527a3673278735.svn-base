@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <TextView  xmlns:android="http://schemas.android.com/apk/res/android" 
+   android:id="@+id/custom_dialog_content"
+   android:layout_width="fill_parent"
+   android:layout_height="54dp"
+   android:singleLine="false"
+   android:textSize="@dimen/talk_dialog_list_item_size"
+   android:textColor="@color/talk_dialog_content_color"		        		        
+   android:text=""     
+   android:paddingLeft="20dp"  
+   android:gravity="center_vertical" 
+   />

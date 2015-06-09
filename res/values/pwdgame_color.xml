@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="result_view">#b0000000</color>
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="possible_result_points">#c0ffff00</color> 
+    
+	<color name="ivory">#FFFFF0</color><!--象牙色 -->
+	<color name="snow">#FFFAFA</color><!--雪白色 -->
+	<color name="floralwhite">#FFFAF0</color><!--花白色 -->
+	<color name="navajowhite">#FFDEAD</color><!--纳瓦白 -->
+	<color name="lightpink">#FFB6C1</color><!--亮粉红色-->
+
+	<color name="magenta">#FF00FF</color><!--红紫色 -->
+	<color name="red">#FFFF0000</color>
+	<color name="oldlace">#FDF5E6</color><!--老花色 -->
+	<color name="lightgoldenrodyellow">#FAFAD2</color><!--亮金黄色 -->
+	<color name="linen">#FAF0E6</color><!--亚麻色 -->
+	<color name="antiquewhite">#FAEBD7</color><!--古董白 -->
+	<color name="whitesmoke">#F5F5F5</color><!--烟白色 -->
+	<color name="plum">#DDA0DD</color><!--洋李色 -->
+	<color name="gainsboro">#DCDCDC</color><!--淡灰色 -->
+	<color name="crimson">#DC143C</color><!--暗深红色 -->
+	<color name="thistle">#D8BFD8</color><!--蓟色 -->
+	<color name="mediumblue">#0000CD</color><!--中兰色 -->
+	<color name="darkblue">#00008B</color><!--暗蓝色 -->
+	<color name="dimgray">#696969</color><!--暗灰色 -->
+	<color name="gray_white">#DDDDDD</color>
+	<color name="gray_white_2">#AAAAAA</color>
+	<!-- <color name="background" #ffececec></color>#fffafafa -->
+	<color name="background">#ffffffff</color>
+    <color name="transparent">#00000000</color> <!-- 透明 -->
+    <color name="translucent">#44000000</color> <!-- 半透明 -->   
+    <color name="yellow_red">#ffec7905</color>
+    <color name="btn_pressed_color">#fffebc24</color> <!-- gridview按下去的颜色 -->
+    <color name="slidingmenu_bgcolor">#ff383D3E</color> <!-- sliding menu的背景色 -->
+    <color name="list_view_item_bg_gray">#ff98989c</color>
+    <color name="list_view_item_bg_white">#ffadadb0</color>
+    <color name="black_real">#ff000000</color>    
+    <color name="transparent_black">#7f000000</color>
+    <color name="black_d3">#ff555555</color>
+    <color name="blue">#ff0000ff</color>
+    <color name="green">#ff00ff00</color>
+    <color name="yellow">#fff09818</color>
+    <color name="white">#ffffffff</color>
+    
+    <color name="card_divider_vertical">#ffd6d6d6</color>
+    <color name="apk_version_color">#ffa7a7a7</color>
+    <color name="apk_name">#ff333333</color>
+    <color name="apk_truesize">#ff5ac45c</color>
+     <color name="apk_desc">#ff888888</color>
+     <!-- activity manager line color -->
+     <color name="activity_manager_line_color">#ffd6d6d6</color>
+     <color name="activity_manager_text_color">#ff444444</color>
+     <!-- about -->
+     <color name="about_version_txt_color">#ff3f3f3f</color>
+      <color name="about_update_time_txt_color">#ffa7a7a7</color>
+    <color name="about_description_txt_color">#ff3f3f3f</color>
+    <color name="about_separate_line_bg">#ffdddddd</color>
+     <color name="about_policy_txt_color">#ff116cc4</color>
+     <!-- FEEDBACK -->
+     <color name="feedback_bg">#fff1f1f1</color>
+     <color name="feedback_line">#ffd7d7d7</color>
+     <color name="feedback_list_time">#ffa7a7a7</color>
+     <color name="feedback_list_question">#ff3f3f3f</color>
+      <color name="feedback_answer_bg">#fff2f2f2</color>
+    <color name="feedback_intput_hint_text">#ffafafaf</color>
+    <color name="feedback_overflow_tips">#fff57a7b</color>
+    
+    <color name="network_not_available">#66ec6066</color>
+    <!-- talk定义颜色#ff01c676 #ff1EAB3A-->
+     <color name="black">#ff444444</color>
+     <color name="talk_title_gray">#ff9a9a9a</color>
+     <color name="talk_home_top_green">#ff01c676</color>
+     <color name="talk_home_top_green_shallow">#1901c676</color>
+     <color name="talk_gray_bk">#19000000</color>
+     <color name="talk_text_gray">#ffe5e5e5</color>
+     <color name="talk_menu_text_color">#353535</color>
+     <color name="talk_icon_press_color">#00B169</color>
+     <color name="talk_contact_detail_headbg">#F1F1F1</color>
+     <color name="talk_dialog_title_color">#01c676</color>
+     <color name="talk_dialog_content_color">#353535</color>
+     
+     <color name="talk_home_menu_normal_color">#26ffffff</color>
+     
+     <color name="telephoney_dialog_bg_color">#f5f5f5</color>
+     
+     <color name="talk_line_color">#dcdcdc</color>   
+     <color name="talk_thirdlogin_line_color">#ff545454</color>   
+     <color name="telephoney_alert_dialog_bg">#ffF8F8F8</color>  
+     
+     <color name="talk_login_alert_color">#ff808080</color>
+     <!-- 进度条颜色 -->
+     <color name="talk_progress_color">#ffc300</color>
+     <!-- tabhost menu字体颜色 -->
+     <color name="talk_hometab_text_color_normal">#ff999999</color>
+     
+     <!--  -->
+     <color name="talk_innermessage_line_color">#ffe3e3e3</color>
+     
+     <color name="ldrawer_color">#FFFFFF</color>
+</resources>

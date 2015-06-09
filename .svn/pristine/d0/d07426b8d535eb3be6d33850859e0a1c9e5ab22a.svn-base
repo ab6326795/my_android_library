@@ -1,0 +1,30 @@
+<resources>
+
+     <!-- popListAnimation -->
+    <style name="XYPopListAnimation" parent="android:Animation" mce_bogus="1">          
+        <item name="android:windowEnterAnimation">@anim/xypopllist_in</item>
+        <item name="android:windowExitAnimation">@anim/xypopllist_out</item>     
+    </style> 
+    
+    <style name="loading_small" parent="@android:style/Widget.ProgressBar.Small">
+		<item name="android:indeterminateDrawable">@anim/loading</item>
+		<item name="android:layout_width">@dimen/large_title_size</item> 
+		<item name="android:layout_height">@dimen/large_title_size</item>
+		<item name="android:layout_gravity">center_vertical</item>
+	</style>
+	
+	<!-- popAnimation -->
+    <style name="PopupAnimation" parent="android:Animation" mce_bogus="1">          
+        <item name="android:windowEnterAnimation">@anim/menu_in</item>
+        <item name="android:windowExitAnimation">@anim/menu_out</item>     
+    </style>  
+    
+	<style name="CustomAlertDialog" parent="@android:Theme.Dialog" >
+	        <item name="android:windowFrame">@null</item>
+	        <item name="android:windowBackground">@android:color/transparent</item>
+	        <item name="android:windowIsFloating">true</item>
+	        <item name="android:windowContentOverlay">@null</item>
+	        <item name="android:windowNoTitle">true</item> 
+	        
+    </style>    
+</resources>

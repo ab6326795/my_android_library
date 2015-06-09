@@ -1,0 +1,58 @@
+package com.pwdgame.util;
+
+import android.content.Context;
+import android.view.Gravity;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
+public class CustomToast {
+
+    private static Toast mToast;
+    private static ImageView imageCodeProject;
+    private static int offsetY;
+    public static void showToast(Context mContext, String text,int imageRes, int duration) {
+        if (mToast != null)
+            mToast.setText(text);
+        else{
+            mToast = Toast.makeText(mContext, text, duration);
+            offsetY=mToast.getYOffset();
+        }
+        
+        LinearLayout toastView = (LinearLayout) mToast.getView();
+        
+        if(imageRes!=0){
+        	//显示图片
+           mToast.setGravity(Gravity.CENTER, 0, 0);
+    	   
+    	   if(imageCodeProject==null||toastView.getChildAt(0)!=imageCodeProject){
+	    	   imageCodeProject = new ImageView(mContext);
+	    	   imageCodeProject.setImageResource(imageRes);
+	    	   toastView.addView(imageCodeProject, 0);
+    	   }else{
+    		   imageCodeProject.setImageResource(imageRes);
+    	   }
+        }else{
+        	//不显示图片
+        	mToast.setGravity(Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, offsetY);
+        	if(imageCodeProject!=null&&toastView.getChildAt(0)==imageCodeProject){
+        		toastView.removeView(imageCodeProject);	
+        	}        	
+        }
+        
+        mToast.show();
+    }
+
+    public static void showToast(Context mContext, int resId, int duration) {
+        showToast(mContext, mContext.getResources().getString(resId),0, duration);
+    }
+    public static void showToast(Context mContext, String text, int duration) {
+    	showToast(mContext, text, 0,duration);
+    }
+    
+    public static void cancel(){
+    	if(mToast!=null){
+    		mToast.cancel();
+    	}
+    }
+}

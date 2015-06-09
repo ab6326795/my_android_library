@@ -1,0 +1,23 @@
+<resources>
+    
+    <dimen name="button_size">24dp</dimen>
+
+    <dimen name="text_size">24dp</dimen>
+    <dimen name="small_text_size">20dp</dimen>
+    <dimen name="small_small_text_size">16dp</dimen>
+    <dimen name="small_small_small_text_size">12dp</dimen>
+    
+    <dimen name="little_title_size">26dp</dimen>    
+    <dimen name="title_size">28dp</dimen>
+    <dimen name="large_title_size">30dp</dimen>
+    <dimen name="xlarge_title_size">32dp</dimen>    
+    <dimen name="xxlarge_title_size">36dp</dimen>
+    
+    <dimen name="talk_dialog_title_size">26dp</dimen>
+    <dimen name="talk_dialog_content_size">24dp</dimen>
+    <dimen name="talk_dialog_button_size">20dp</dimen>
+    <dimen name="talk_dialog_list_item_size">26dp</dimen>
+    
+    <dimen name="textview_line_spacing">0dp</dimen>
+
+</resources>

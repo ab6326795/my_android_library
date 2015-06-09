@@ -1,0 +1,256 @@
+package com.pwdgame.http;
+
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
+
+import android.content.Context;
+import android.util.Log;
+
+import com.pwdgame.bean.http.BaseModel;
+import com.pwdgame.cache.XYFileCache;
+import com.pwdgame.http.parser.HttpParserImpl;
+import com.pwdgame.http.parser.IHttpParser;
+import com.pwdgame.secure.Hex2Byte;
+import com.pwdgame.secure.MD5;
+import com.pwdgame.util.DeviceInfo;
+
+/**
+ * HTTP 请求工具类
+ * @author admin
+ *
+ */
+public class HttpUtils {	
+	private static String strDefaultKey="$%^nnbgwd$%*";
+	/**
+	 * 获取基本参数
+	 * @param hashMap
+	 * @return
+	 */
+	public static LinkedHashMap<String, String> getBaseData(){
+		LinkedHashMap<String, String> paramsHashMap=new LinkedHashMap<String,String>();
+		//"-1806379281" 1237742690
+		//int sss=+DeviceInfo.getSign();
+		paramsHashMap.put("sign",""+DeviceInfo.getSign());		//+DeviceInfo.getSign()
+		paramsHashMap.put("version",""+DeviceInfo.getAppVersionCode());
+		paramsHashMap.put("clientflag","1");
+		paramsHashMap.put("package",DeviceInfo.getPackName());
+		paramsHashMap.put("mac", ""+DeviceInfo.getMAC()); 
+		paramsHashMap.put("phone_model",""+DeviceInfo.getPhoneModel());
+		paramsHashMap.put("imei",""+DeviceInfo.getIMEI());
+		paramsHashMap.put("channel",""+DeviceInfo.getChannel());
+		
+		return paramsHashMap;
+	}
+	
+	public static String getBaseDataString(){
+		StringBuilder builder=new StringBuilder();
+		builder.append("sign=");
+		builder.append(""+DeviceInfo.getSign());
+		builder.append("&version=");
+		builder.append(DeviceInfo.getAppVersionCode());
+		builder.append("&clientflag=1");
+		builder.append("&package=");
+		builder.append(DeviceInfo.getPackName());
+		builder.append("&mac=");
+		builder.append(DeviceInfo.getMAC());
+		builder.append("&phone_model=");
+		builder.append(DeviceInfo.getPhoneModel());
+		builder.append("&imei=");
+		builder.append(""+DeviceInfo.getIMEI());		
+		builder.append("&channel=");
+		builder.append(DeviceInfo.getChannel());
+		
+		return builder.toString();
+	}
+	
+	/**
+	 * 获取并叠加参数
+	 * @param hashMap
+	 * @return
+	 */
+	public static LinkedHashMap<String, String> getBaseData(Map<String, String> hashMap){
+		LinkedHashMap<String, String> paramsHashMap=getBaseData();
+		
+		if(hashMap!=null&&hashMap.size()>0){		
+			for(String key:hashMap.keySet()){
+				paramsHashMap.put(key,hashMap.get(key));
+				
+			}
+		}
+
+		return paramsHashMap;
+	}
+	/**
+	 * 返回 HASHMAP 组合KEY后的MAP
+	 * @param hashMap
+	 * @return
+	 */
+	public static LinkedHashMap<String, String> getRequestData(Map<String, String> hashMap){
+	    String key=null;
+	    
+		try {
+			key=encryptHashMap(hashMap);
+		} catch (Exception e1) {
+			Log.e("sendRequest", "加密发生异常");
+			e1.printStackTrace();
+		}
+		//拼接
+		LinkedHashMap<String, String> requestContent=getBaseData(hashMap);
+		//添加密钥
+		requestContent.put("checkcode", key);
+		
+		return requestContent;
+	}
+	
+	/**
+	 * 返回加密字符串
+	 * @return
+	 * @throws Exception 
+	 */
+	public static String encryptHashMap(Map<String, String> hashMap) throws Exception{
+		StringBuilder builder=new StringBuilder();
+		
+		if(hashMap!=null&&hashMap.size()>0){		
+			for(String key:hashMap.keySet()){
+				builder.append(hashMap.get(key));				
+			}
+		}
+		String des=encryptString(builder.toString());
+		
+		return des;
+	}
+	/**
+	 * 返回加密字符串
+	 * @return
+	 * @throws Exception 
+	 */
+	public static String encryptString(String str){	
+		String result=null;
+		
+		try {
+			String md5=MD5.encryptToHex(str,strDefaultKey);
+			result=Hex2Byte.encryptDES(md5);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		
+		return result;
+	}
+
+	/**
+	 * 发送请求
+	 * @param applyCache 是否应用缓存
+	 * @param url
+	 * @param param
+	 * @return
+	 */
+	public static BaseModel sendRequest(Context mContext,IHttpParser parser,Class outputClass,boolean applyCache,String url,Map<String, String> hashMap,String... params){
+		
+		String json=null;
+	    
+		//请求主体URL编码
+		//String encodeContent=URLEncoder.encode(requestContent);
+		
+		XYHttpConnection httpConnection=new XYHttpConnection();
+		
+		try {
+			if(hashMap==null){
+				json=new String(httpConnection.doPost(url,getBaseData()));				
+			}
+			else{
+				LinkedHashMap<String, String> map =getRequestData(hashMap);
+				if(params!=null&&params.length>0){
+					for(int i=0,len=params.length;i<len;i+=2){
+						map.put(params[i], params[i+1]);
+					}
+				}
+				
+			   json=new String(httpConnection.doPost(url,map));		
+			}
+		} catch (HttpResponseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}         		
+		
+		if(outputClass==null){
+			return parser.parseObject(mContext, applyCache, url, json);
+		}else{
+			return parser.parseObject(mContext,applyCache,url, json,outputClass);	
+		}
+		
+	}
+	/**
+	 * 发送请求
+	 * @param applyCache 是否应用缓存
+	 * @param url
+	 * @param param
+	 * @return
+	 */
+	public static BaseModel sendRequest(Context mContext,IHttpParser parser,boolean applyCache,String url,Map<String, String> hashMap,String... params){
+		return sendRequest(mContext, parser,null, applyCache, url, hashMap, params);
+	}
+	/**
+	 * 发送请求
+	 * @param applyCache 是否应用缓存
+	 * @param url
+	 * @param param
+	 * @return
+	 */
+	public static BaseModel sendRequestDef(Context mContext,boolean applyCache,String url,Map<String, String> hashMap,String... params){
+		return sendRequest(mContext, new HttpParserImpl(),null, applyCache, url, hashMap, params);
+	}	
+	/**
+	 * 读取缓存
+	 * @param url
+	 * @return
+	 */
+	public static BaseModel readCache(IHttpParser parser,Context mContext,String url,Class outputClass){
+		String json=XYFileCache.getUrlCache(mContext, url, false);
+		if(json!=null){
+
+			if(outputClass==null){
+				return parser.parseObject(mContext, true, url, json);
+			}else{
+				return parser.parseObject(mContext,true,url,json,outputClass);	
+			}			    			    			 
+		}
+	    return null;
+	}
+	/**
+	 * 读取缓存
+	 * @param url
+	 * @return
+	 */
+	public static BaseModel readCache(IHttpParser parser,Context mContext,String url){
+		return readCache(parser, mContext, url,null);
+	}
+
+/*	*//**
+	 * 发送请求
+	 * @param url
+	 * @param param
+	 * @return
+	 *//*
+	public static BaseModel sendRequestFormFile(String url,byte[] b,String fileName,String fileMime){
+		BaseModel tmp=null;
+		String json=null;
+
+		
+		XYHttpConnection xyHttpConnection=XYHttpConnection.getInstance();
+
+		json=new String(xyHttpConnection.uploadFile(url, b, fileName, fileMime));
+
+		return HttpParser.parseObject(url, json);
+	}*/
+}

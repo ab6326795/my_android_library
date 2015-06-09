@@ -1,0 +1,22 @@
+package com.pwdgame.context;
+
+import android.content.Context;
+
+import com.pwdgame.util.DeviceInfo;
+import com.pwdgame.util.SharedPreferenceUtil;
+
+public class XYContextWrapper {
+	private static Context mContext;
+	
+	private XYContextWrapper(){}
+	
+	public static void init(Context context){
+		mContext=context;		
+		DeviceInfo.init(mContext);
+		SharedPreferenceUtil.init(mContext);		
+	}
+
+	public static Context getContext(){
+		return mContext;
+	}
+}

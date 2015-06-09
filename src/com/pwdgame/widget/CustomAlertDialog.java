@@ -1,0 +1,436 @@
+package com.pwdgame.widget;
+
+import java.util.HashMap;
+import java.util.List;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
+
+import com.pwdgame.library.R;
+import com.pwdgame.util.Utility;
+
+public class CustomAlertDialog {
+
+	private Dialog dialog;
+	
+	private Context mContext;
+	private View view;
+	private ViewGroup rootGroup;
+	private ViewGroup rootBgGroup;
+	private ViewGroup titleGroup;
+	private ViewGroup contentGroup;
+	private TextView titleView;
+	private TextView contentView;
+	private Button cancelButton;
+	private Button okButton;
+	private View btnLine;
+	private LinearLayout bottomLinear;
+	private ImageView iconImageView;
+	private ListView mListView;
+	private BaseAdapter mArrayAdapter;
+	
+	private String title;
+	private String content;
+	private String cancelBtnText;
+	private OnDialogClickListener cancelClickListener;
+	private String okBtnText;
+	private OnDialogClickListener okClickListener;
+	private int iconRes=-1;
+	private View customContentView;
+	private View customHeadView;
+	
+	private boolean cancelable=true;
+	
+	
+	public CustomAlertDialog(Context mContext) {
+		this.mContext=mContext;	
+		init();
+	}
+
+	public CustomAlertDialog(Context mContext,String title,String content) {
+		this.mContext=mContext;	
+		init();
+		this.title=title;
+		this.content=content;
+		this.okBtnText=mContext.getString(R.string.ok);
+		setButtonListener(null,new OnDialogClickListener() {
+			
+			@Override
+			public void onClick(CustomAlertDialog dialog,Object obj) {
+				dismiss();
+			}
+		});
+
+	}
+	public CustomAlertDialog(final Context mContext,String title,String content,String cancelStr,String okStr,OnDialogClickListener okClickListener) {
+		this.mContext=mContext;	
+		init();
+		this.title=title;
+		this.content=content;
+		if(cancelStr!=null)
+			this.cancelBtnText=cancelStr;
+		else
+		   this.cancelBtnText=mContext.getString(R.string.cancel);
+		if(okStr!=null)
+			this.okBtnText=okStr;
+		else
+		   this.okBtnText=mContext.getString(R.string.ok);
+		setButtonListener(new OnDialogClickListener() {
+			
+			@Override
+			public void onClick(CustomAlertDialog dialog,Object obj) {
+				if(CustomAlertDialog.this.dialog.getCurrentFocus()!=null)
+				     Utility.closeBoard(mContext, CustomAlertDialog.this.dialog.getCurrentFocus());
+				CustomAlertDialog.this.dismiss();
+			}
+		},okClickListener);
+	}
+	public CustomAlertDialog(Context mContext,String title,String content,String cancelStr,OnDialogClickListener cancelClickListener,
+			String okStr,OnDialogClickListener okClickListener
+			) {
+		this.mContext=mContext;	
+		init();
+		this.title=title;
+		this.content=content;
+		this.cancelBtnText=cancelStr;
+		this.cancelClickListener=cancelClickListener;
+		this.okBtnText=okStr;
+		this.okClickListener=okClickListener;
+		setButtonListener(cancelClickListener,okClickListener);
+	}
+
+	public CustomAlertDialog(Context mContext,String title,String[] items,String cancelStr,OnDialogClickListener cancelClickListener,
+			String okStr,OnDialogClickListener okClickListener ,final OnDialogClickListener itemClickListener){
+		this.mContext=mContext;	
+		init();
+		
+		this.title=title;
+		this.cancelBtnText=cancelStr;	
+		this.okBtnText=okStr;
+		mArrayAdapter=new ArrayAdapter<String>(mContext, R.layout.custom_dialog_listview_item, items);
+		if(itemClickListener!=null)
+			mListView.setOnItemClickListener(new ListView.OnItemClickListener() {
+	
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					itemClickListener.onClick(CustomAlertDialog.this, (Object)position);
+				}
+			});
+		if(cancelClickListener!=null){
+		    this.cancelClickListener=cancelClickListener;
+    		this.cancelButton.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					CustomAlertDialog.this.cancelClickListener.onClick(CustomAlertDialog.this,null);
+				}
+			});
+		}
+		
+		if(okClickListener!=null){
+		    this.okClickListener=okClickListener;
+    		this.okButton.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					CustomAlertDialog.this.okClickListener.onClick(CustomAlertDialog.this,null);
+				}
+			});
+		}
+		
+	}
+	public CustomAlertDialog(Context mContext,String title,List<HashMap<String, Object>> items,String cancelStr,OnDialogClickListener cancelClickListener,
+			String okStr,OnDialogClickListener okClickListener ,final OnDialogClickListener itemClickListener){
+		this.mContext=mContext;	
+		init();
+		
+		this.title=title;
+		this.cancelBtnText=cancelStr;	
+		this.okBtnText=okStr;
+		mArrayAdapter=new SimpleAdapter(mContext, items, R.layout.custom_dialog_listview_item2, new String[]{"image","title"},
+				new int[]{R.id.custom_dialog_image,R.id.custom_dialog_content});
+			mListView.setOnItemClickListener(new ListView.OnItemClickListener() {
+	
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					itemClickListener.onClick(CustomAlertDialog.this, (Object)position);
+				}
+			});
+		if(cancelClickListener!=null){
+		    this.cancelClickListener=cancelClickListener;
+    		this.cancelButton.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					CustomAlertDialog.this.cancelClickListener.onClick(CustomAlertDialog.this,null);
+				}
+			});
+		}
+		
+		if(okClickListener!=null){
+		    this.okClickListener=okClickListener;
+    		this.okButton.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					CustomAlertDialog.this.okClickListener.onClick(CustomAlertDialog.this,null);
+				}
+			});
+		}
+		
+	}
+    private void init(){    				
+		LayoutInflater inflater=(LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		view=inflater.inflate(R.layout.custom_dialog_layout, null);
+		rootGroup=(ViewGroup)view.findViewById(R.id.custom_dialog_root);
+		rootBgGroup=(ViewGroup) view.findViewById(R.id.custom_dialog_root_bglinear);
+		titleGroup=(ViewGroup) view.findViewById(R.id.custom_dialog_title_linear);
+		contentGroup=(ViewGroup)view.findViewById(R.id.custom_dialog_content_linear);
+		titleView=(TextView)view.findViewById(R.id.custom_dialog_title);
+		contentView=(TextView)view.findViewById(R.id.custom_dialog_content);
+		cancelButton=(Button)view.findViewById(R.id.custom_dialog_cancelbtn);
+		okButton=(Button)view.findViewById(R.id.custom_dialog_okbtn);
+		btnLine=(View)view.findViewById(R.id.custom_dialog_btnline);
+		iconImageView=(ImageView)view.findViewById(R.id.custom_dialog_icon);
+		mListView=(ListView)view.findViewById(R.id.custom_dialog_content_listview);
+		bottomLinear=(LinearLayout)view.findViewById(R.id.custom_dialog_button_linear);
+
+    }
+    
+    private void setButtonListener(OnDialogClickListener cancelListener,OnDialogClickListener okListener){
+    	if(cancelListener!=null)
+    	    this.cancelClickListener=cancelListener;
+    	if(okListener!=null)
+    	    this.okClickListener=okListener;
+    	if(this.okClickListener!=null){
+    		this.okButton.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					CustomAlertDialog.this.okClickListener.onClick(CustomAlertDialog.this,null);
+				}
+			});
+    	}
+    	if(this.cancelClickListener!=null){
+    		this.cancelButton.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					CustomAlertDialog.this.cancelClickListener.onClick(CustomAlertDialog.this,null);
+				}
+			});
+    	}
+    }
+    
+	public CustomAlertDialog setTitle(String title){
+		this.title=title;
+		return this;
+	}
+	public CustomAlertDialog setContent(String content){
+		this.content=content;
+		return this;
+	}
+	
+	public CustomAlertDialog setIcon(int icon){
+		this.iconRes=icon;
+		
+		return this;
+	}
+	
+	public CustomAlertDialog setCancelButton(String cancelStr,OnDialogClickListener cancelClickListener){
+		this.cancelBtnText=cancelStr;
+		setButtonListener(cancelClickListener,null);
+		return this;
+	}
+	
+	public CustomAlertDialog setOkButton(String okStr,OnDialogClickListener okClickListener){
+		this.okBtnText=okStr;
+		setButtonListener(null, okClickListener);
+		return this;
+	}
+	
+	public CustomAlertDialog setCancelable(boolean cancelable){
+		this.cancelable=cancelable;
+		
+		return this;
+	}
+	/**
+	 * 设置自定义内容视图
+	 * @param customContentView
+	 * @return
+	 */
+	public CustomAlertDialog setCustomContentView(View customContentView){
+		return setCustomContentView(customContentView, 0);
+	}
+	/**
+	 * 设置自定义内容视图
+	 * @param customContentView
+	 * @param bgRes 对话框背景图  0不设置 ，使用默认，-1透明
+	 * @return
+	 */
+	public CustomAlertDialog setCustomContentView(View customContentView,int bgRes){
+		this.customContentView=customContentView;
+		if(bgRes==-1){
+			this.rootBgGroup.setBackgroundResource(android.R.color.transparent);
+		}else if(bgRes!=0){
+			this.rootBgGroup.setBackgroundResource(bgRes);
+		}
+		
+		return this;
+	}
+	
+	/**
+	 * 设置自定义HEAD 视图
+	 * @param customHeadView
+	 * @return
+	 */
+	public CustomAlertDialog setCustomHeadView(View customHeadView){
+		this.customHeadView=customHeadView;
+
+		return this;
+	}
+
+	public void setOkButtonColor(int color){
+		okButton.setTextColor(color);
+	}
+	
+	public View getDecorView(){
+		preShow();
+		return view;
+	}
+	
+	
+	private void preShow(){
+		if(iconRes==-1)
+			iconImageView.setVisibility(View.GONE);
+		else{
+			iconImageView.setVisibility(View.VISIBLE);
+			this.iconImageView.setImageResource(iconRes);
+		}
+		
+		if(title==null){
+			titleGroup.setVisibility(View.GONE);
+		}else{
+			titleView.setText(title);
+		}
+		
+		if(content==null&&customContentView==null&&mArrayAdapter==null){
+			contentGroup.setVisibility(View.GONE);
+		}else if(content!=null){
+			contentView.setText(content);
+			mListView.setVisibility(View.GONE);
+		}else if(mArrayAdapter!=null){
+			contentView.setVisibility(View.GONE);
+			mListView.setAdapter(mArrayAdapter);
+			mListView.setVisibility(View.VISIBLE);
+		}else if(customContentView!=null){
+			this.contentGroup.addView(this.customContentView);
+			this.contentView.setVisibility(View.GONE);
+		}
+		
+		if(customHeadView!=null){
+			rootGroup.addView(customHeadView, 0);
+		}
+		
+		if(cancelBtnText==null){
+			cancelButton.setVisibility(View.GONE);
+			btnLine.setVisibility(View.GONE);
+		}else{
+			cancelButton.setText(cancelBtnText);
+		}
+		
+		if(okBtnText==null){
+			okButton.setVisibility(View.GONE);
+			btnLine.setVisibility(View.GONE);
+		}else{
+			okButton.setText(okBtnText);
+		}
+		
+		if(cancelBtnText==null&&okBtnText==null){
+			bottomLinear.setVisibility(View.GONE);
+		}else{
+			bottomLinear.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	public void show(int theme){
+		try {
+			preShow();
+			
+	    	dialog = new Dialog(mContext,theme);
+			dialog.setContentView(view);
+			dialog.setCancelable(cancelable);
+			dialog.show();	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
+	}
+	public void show(){
+		show(R.style.CustomAlertDialog);	
+	}
+	
+	public void dismiss(){
+		if(dialog!=null&&dialog.isShowing())
+			dialog.dismiss();		
+	}
+	
+	public static void showDialog(Context mContext,String title,String content,String cancelStr,OnDialogClickListener cancelClickListener,
+			String okStr,OnDialogClickListener okClickListener){
+		CustomAlertDialog customAlertDialog=new CustomAlertDialog(mContext, title, content, cancelStr, cancelClickListener, okStr, okClickListener);
+		customAlertDialog.show();
+	}
+	public static void showDialog(Context mContext,String title,String content,OnDialogClickListener okClickListener){
+		showDialog(mContext, title, content, null,null, okClickListener);
+	}
+	public static void showDialog(Context mContext,String title,String content,String cancelStr,String okStr,OnDialogClickListener okClickListener){
+		CustomAlertDialog customAlertDialog=new CustomAlertDialog( mContext,title,content,cancelStr,okStr,okClickListener);
+		customAlertDialog.show();
+	}
+
+	public static void showDialog(Context mContext,String title,String content){
+		CustomAlertDialog customAlertDialog=new CustomAlertDialog( mContext,title,content);
+		customAlertDialog.show();
+	}
+	
+	
+	
+	/**
+	 * LIST Dialog
+	 * @param mContext
+	 * @param title
+	 * @param items
+	 * @param itemClickListener
+	 * @param okText
+	 * @param okClickListener
+	 */
+	public static void showDialog(Context mContext,String title,String[] items,OnDialogClickListener itemClickListener,String okText,OnDialogClickListener okClickListener){
+		CustomAlertDialog customAlertDialog=new CustomAlertDialog( mContext,title, items,null,null,okText, okClickListener ,itemClickListener);
+		customAlertDialog.show();
+	}
+	
+	public static void showDialog(Context mContext,String title,View customContentView,String cancelStr,String okStr,OnDialogClickListener okClickListener){
+		CustomAlertDialog customAlertDialog=new CustomAlertDialog( mContext,title,null,cancelStr,okStr,okClickListener);
+		customAlertDialog.customContentView=customContentView;
+		customAlertDialog.show();
+	}
+	
+	public interface OnDialogClickListener {
+
+		public void onClick(CustomAlertDialog dialog,Object obj);
+	}
+}

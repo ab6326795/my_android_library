@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--  -->
+     <declare-styleable name="XYGridDivideLayout">
+        <attr name="numColumns" format="integer" />
+        <attr name="itemMargin" format="integer" />
+    </declare-styleable>
+
+     <!-- 自定义 -->
+    <declare-styleable name="WaitView">
+        <attr name="iconBitmap" format="reference"/>
+        <attr name="ringBitmap" format="reference" />
+        <attr name="scatterOneWidth" format="dimension" />
+        <attr name="scatterTwoWidth" format="dimension" />
+        <attr name="scatterColor" format="color|reference" />
+        <attr name="step" format="integer"/>
+    </declare-styleable>  
+     <!-- XYViewPagerRelativeLayout -->
+    <declare-styleable name="ReletiveLayoutForViewPager">
+        <attr name="dotLinearMargin" format="dimension" />
+        <attr name="dotLinearMarginTop" format="dimension" />
+        <attr name="dotLinearMarginBottom" format="dimension" />
+        <attr name="dotLinearMarginLeft" format="dimension" />
+        <attr name="dotLinearMarginRight" format="dimension" />
+        <attr name="dotWidth" format="dimension" />
+        <attr name="dotMarginRight" format="dimension" />
+        <attr name="dotCount" format="integer" />
+        <attr name="viewpager_autoswitch" format="reference|boolean"/>
+        <attr name="viewpager_interval" format="integer"/>
+    </declare-styleable>  
+          
+        <!-- 自定义 -->
+    <declare-styleable name="ImageNumberView">
+        <attr name="numberBitmap" format="reference"/>                
+        <attr name="number" format="integer"/>
+    </declare-styleable> 
+    
+    <!-- XYSlideCutListView -->
+    <declare-styleable name="XYSlideCutListView">                
+        <attr name="slideMode" format="enum">
+            <enum name="left" value="1" />
+            <enum name="right" value="2" />
+            <enum name="all" value="3" />
+        </attr>    
+    </declare-styleable>     
+</resources>

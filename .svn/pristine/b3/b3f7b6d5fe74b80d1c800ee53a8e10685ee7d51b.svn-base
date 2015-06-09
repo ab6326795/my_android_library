@@ -1,0 +1,12 @@
+package com.pwdgame.http;
+
+import com.pwdgame.bean.http.BaseModel;
+/**
+ * 数据相应接口
+ * @author Administrator
+ *
+ */
+public interface IHttpResponse {
+	//public void onFinish(int arg0, Header[] arg1, byte[] arg2);
+	public void onFinish(BaseModel baseModel);
+}

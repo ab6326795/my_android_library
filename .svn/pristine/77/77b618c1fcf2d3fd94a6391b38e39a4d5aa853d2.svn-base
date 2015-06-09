@@ -1,0 +1,385 @@
+package com.pwdgame.view;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
+import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.ValueAnimator;
+import com.nineoldandroids.view.ViewHelper;
+import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.pwdgame.library.R;
+/**
+ * 这是一个华丽的滑动删除ListView，可以自定义开启左滑、右滑
+ * @author xieyuan
+ *
+ */
+public class XYSlideCutListView extends ListView{
+
+	//达到这个速率也可以说是滑动
+	//private static final int SNAP_VELOCITY=600;
+	//
+	//滑动效果持续时间
+	protected static final long mAnimationTime = 200;  
+	
+	//滑动回滚动画时间
+	protected static final long mAnimationResetTime=100;
+	
+	private static final int MODE_LEFT=1;
+	private static final int MODE_RIGHT=2;
+	private static final int MODE_ALL=MODE_LEFT|MODE_RIGHT;
+	
+	/**当前滑动的posotion*/
+	private int slidePosition;
+	/**手指按下的X坐标，Y坐标*/
+	private int downX,downY;
+	/**屏幕宽度*/
+	private int mListWidth;
+	/**listview滑动的VIEW*/
+	private View itemView;
+	/**属性动画*/
+	private ViewPropertyAnimator mPropertyAnimator;
+	//动画是否已经结束
+	private boolean isAnimationFinish=true;
+	
+	/**是否响应滑动，默认不响应*/
+	private boolean isSlide=false;
+	/**速率对象*/
+	private VelocityTracker mVelocityTracker;
+	/**
+	 * 认为是用户滑动的最小距离
+	 */
+	private int mTouchSlop;	
+	
+	/**
+	 * 用来指示item滑出屏幕的方向,向左或者向右,用一个枚举值来标记
+	 */
+	private SlideDirection mSlideDirection;
+	
+	/**
+	 * 滑动回调
+	 */
+	private SlideListener mSlideListener;
+	
+	/**
+	 * 当前支持的滑动模式
+	 */
+	private int mode;
+	
+	public enum SlideDirection{
+		RIGHT,LEFT
+	}
+	
+	public XYSlideCutListView(Context context) {
+		this(context, null);
+	}
+	public XYSlideCutListView(Context context,AttributeSet attributeSet){
+		this(context, attributeSet, 0);
+	}
+	public XYSlideCutListView(Context context,AttributeSet attributeSet,int defStyle){
+		super(context, attributeSet,defStyle);
+
+		mTouchSlop=ViewConfiguration.get(context).getScaledTouchSlop();
+        parseAttributes(context.obtainStyledAttributes(attributeSet,R.styleable.XYSlideCutListView));
+       
+    }
+	
+	private void parseAttributes(TypedArray a){			
+		mode=a.getInt(R.styleable.XYSlideCutListView_slideMode, MODE_ALL);
+		a.recycle();
+	}  
+	/**
+	 * 分发事件，主要做的是判断点击的是那个item, 以及通过postDelayed来设置响应左右滑动事件
+	 */
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+		// 假如滚动还没有结束，我们直接返回
+		if (!isAnimationFinish) {
+			return super.dispatchTouchEvent(event);
+		}
+		addVelocityTracker(event);
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_DOWN: {
+			
+			downX = (int) event.getX();
+			downY = (int) event.getY();
+
+			slidePosition = pointToPosition(downX, downY);
+
+			// 无效的position, 不做任何处理
+			if (slidePosition == AdapterView.INVALID_POSITION) {
+				return super.dispatchTouchEvent(event);
+			}
+
+			// 获取我们点击的item view
+			itemView = getChildAt(slidePosition - getFirstVisiblePosition());
+			if(itemView!=null){
+				mListWidth=itemView.getWidth();				
+			}
+			break;
+		}
+		case MotionEvent.ACTION_MOVE: {
+			//速率满足、滑动距离满足  update 2：当用户手指上滑动，速度很快，Xvelocity也会变大，导致上滑也执行了删除，所以去掉
+			//int velocityX = getScrollVelocity();
+			//if((mode&MODE_LEFT)>0){
+			switch(mode){
+			case MODE_LEFT:
+				if(event.getX()-downX<-mTouchSlop&& Math.abs(event.getY() - downY) < mTouchSlop){
+					isSlide=true;
+				}
+				break;
+			case MODE_RIGHT:
+				if((event.getX()-downX>mTouchSlop&& Math.abs(event.getY() - downY) < mTouchSlop)){
+					isSlide=true;
+				}
+				break;
+			case MODE_ALL:
+				if (Math.abs(event.getX() - downX) > mTouchSlop && Math
+								.abs(event.getY() - downY) < mTouchSlop) {
+					isSlide = true;
+					
+				}
+				break;
+			}
+		
+			break;
+		}
+		case MotionEvent.ACTION_UP:
+			addVelocityTracker(event);
+			break;
+		}
+
+		return super.dispatchTouchEvent(event);
+	}
+	
+	/**
+	 * 处理我们拖动ListView item的逻辑
+	 */
+	@Override
+	public boolean onTouchEvent(MotionEvent ev) {
+		if (isSlide && slidePosition != AdapterView.INVALID_POSITION) {
+			requestDisallowInterceptTouchEvent(true);
+			addVelocityTracker(ev);
+
+			final int action = ev.getAction();
+			int x = (int) ev.getX();
+			switch (action) {
+			case MotionEvent.ACTION_DOWN:
+				downX = x;
+				
+				break;
+			case MotionEvent.ACTION_MOVE:
+				//当手指滑动item,取消item的点击事件，不然我们滑动Item也伴随着item点击事件的发生
+				MotionEvent cancelEvent = MotionEvent.obtain(ev);
+	            cancelEvent.setAction(MotionEvent.ACTION_CANCEL |
+	                       (ev.getActionIndex()<< MotionEvent.ACTION_POINTER_INDEX_SHIFT));
+	            onTouchEvent(cancelEvent);
+	            
+	            
+				int deltaX = x-downX;
+				
+				// 手指拖动itemView滚动, deltaX大于0向左滚动，小于0向右滚
+				//itemView.scrollBy(deltaX, 0);
+				switch (mode) {
+				case MODE_LEFT:
+					if(deltaX<0)
+						ViewHelper.setTranslationX(itemView, deltaX);
+					break;
+
+				case MODE_RIGHT:
+					if(deltaX>0)
+						ViewHelper.setTranslationX(itemView, deltaX);
+					break;
+				case MODE_ALL:
+					ViewHelper.setTranslationX(itemView, deltaX);
+					break;
+				}
+				
+				
+				return true;  //拖动的时候ListView不滚动
+			case MotionEvent.ACTION_UP:
+				//int velocityX = getScrollVelocity();
+				/*if ((mode&MODE_RIGHT)>0&&) {					
+					slide(SlideDirection.RIGHT);
+				} else if ((mode&MODE_LEFT)>0) {
+					slide(SlideDirection.LEFT);
+				} else {					
+					
+				}*/
+				scrollByDistanceX();
+				recycleVelocityTracker();
+				// 手指离开的时候就不响应左右滚动
+				isSlide = false;
+				break;
+			}
+		}
+
+		//否则直接交给ListView来处理onTouchEvent事件
+		return super.onTouchEvent(ev);
+	}
+
+	/**
+	 * 左右滚动itemview
+	 * @param direction 滚动的方向
+	 */
+	public void slide(SlideDirection direction){
+		if(itemView==null)
+			return;
+		mSlideDirection=direction;
+		isAnimationFinish=false;
+		ViewPropertyAnimator.animate(itemView)
+		                    .translationX(direction==SlideDirection.LEFT? -mListWidth:mListWidth)
+		                    .setDuration(mAnimationTime)
+		                    .setListener(new com.nineoldandroids.animation.AnimatorListenerAdapter() {
+		                    	@Override
+								public void onAnimationEnd(Animator animation) {
+		                    		onSlideFinish();		                    		
+								}
+		                    });
+	}
+	
+	/**
+	 * 恢复初始位置
+	 */
+	public void resetSlide(){
+		if(itemView==null)
+			return;
+		isAnimationFinish=false;
+		ViewPropertyAnimator.animate(itemView)
+        .translationX(0)
+        .setDuration(mAnimationResetTime)
+	    .setListener(new com.nineoldandroids.animation.AnimatorListenerAdapter() {
+	        	@Override
+				public void onAnimationEnd(Animator animation) {
+	        	   isAnimationFinish=true;			                    		
+				}
+	        });
+	}
+	
+	/**
+	 * 滚动效果完成后，其他的item向上或者向下滚动的动画,在此方法中执行删除adapter item
+	 */
+	public void onSlideFinish(){
+		final int OriginalHeight=itemView.getHeight();
+		ValueAnimator mValueAnimator=ValueAnimator.ofInt(OriginalHeight,0).setDuration(mAnimationTime);
+		mValueAnimator.addListener(new com.nineoldandroids.animation.AnimatorListenerAdapter(){
+        	@Override
+			public void onAnimationEnd(Animator animation) { 
+        		ViewHelper.setTranslationX(itemView, 0);
+
+				if(mSlideListener!=null)
+					 mSlideListener.onSlideCut(XYSlideCutListView.this,mSlideDirection, slidePosition);
+				isAnimationFinish=true;
+			}
+		});
+		mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+			
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				//这段代码的效果是ListView删除某item之后，其他的item向上滑动的效果  
+				ViewGroup.LayoutParams mLayoutParams=itemView.getLayoutParams();				
+				mLayoutParams.height = (Integer) animation.getAnimatedValue(); 
+				itemView.requestLayout();
+				//Log.e("VALUE", animation.getAnimatedValue()+"");
+				//itemView.setLayoutParams(mLayoutParams);
+			}
+		});
+		mValueAnimator.start();
+	}
+
+	/**
+	 * 根据手指滚动itemView的距离来判断是滚动到开始位置还是向左或者向右滚动
+	 */
+	private void scrollByDistanceX() {
+		// 如果向左滚动的距离大于mTouchSlop，就让其删除  正数向右移动
+		int translationX=(int) ViewHelper.getTranslationX(itemView);
+		if (translationX >= mListWidth/3&&(mode&MODE_RIGHT)>0) {
+			slide(SlideDirection.RIGHT);
+			//负数向左边移动
+		} else if (Math.abs(translationX)>= mListWidth/3&&(mode&MODE_LEFT)>0) {
+			slide(SlideDirection.LEFT);
+		} else {
+			// 滚回到原始位置,为了偷下懒这里是直接调用scrollTo滚动
+			resetSlide();
+		}
+
+	}
+	/**
+	 * 添加用户的速度跟踪器
+	 * @param event
+	 */
+	public void addVelocityTracker(MotionEvent event){
+		if(mVelocityTracker==null){
+			mVelocityTracker=VelocityTracker.obtain();
+		}
+		mVelocityTracker.addMovement(event);
+	}
+	/**
+	 * 移除用户速度跟踪器
+	 */
+	private void recycleVelocityTracker() {
+		if (mVelocityTracker != null) {
+			mVelocityTracker.recycle();
+			mVelocityTracker = null;
+		}
+	}
+/*	
+	*//**
+	 * 获取X方向的滑动速度,大于0向右滑动，反之向左
+	 * 
+	 * @return
+	 *//*
+	private int getScrollVelocity() {
+		mVelocityTracker.computeCurrentVelocity(1000);
+		int velocity = (int) mVelocityTracker.getXVelocity();
+		return velocity;
+		return 0;
+	}*/
+    
+/*	@Override
+	*//**
+	 * 重写该方法，达到使ListView适应ScrollView的效果
+	 *//*
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+	    int expandSpec = MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE >> 2,
+	    MeasureSpec.AT_MOST);
+	    super.onMeasure(widthMeasureSpec, expandSpec);
+	}*/
+	
+	/**
+	 * 设置滑动完成的监听器
+	 * @param listener
+	 */
+	public void setOnSlideListener(SlideListener listener){
+		this.mSlideListener=listener;
+	}
+	
+	/**
+	 * 设置滑动模式
+	 * @param mode MODE_LEFT or MODE_RIGHT or MODE_ALL
+	 */
+	public void setMode(int mode){
+		this.mode=mode;
+	}
+	
+	public interface SlideListener{
+		/**
+		 * listview item被移除
+		 * @param direction 滑动方向
+		 * @param position 滑动item在ListView的位置
+		 */
+		public void onSlideCut(AdapterView<?> parent,SlideDirection direction,int position);
+	}
+	
+}
