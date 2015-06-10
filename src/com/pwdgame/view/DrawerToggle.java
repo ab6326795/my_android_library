@@ -150,10 +150,13 @@ public class DrawerToggle extends android.support.v4.app.ActionBarDrawerToggle {
             try {
                 Method setHomeAsUpIndicator = ActionBar.class.getDeclaredMethod("setHomeAsUpIndicator",
                     Drawable.class);
-                setHomeAsUpIndicator.invoke(mActivity.getSupportActionBar(), mDrawerImage);
-                return;
+                if(setHomeAsUpIndicator!=null){
+                	 setHomeAsUpIndicator.invoke(mActivity.getSupportActionBar(), mDrawerImage);
+                     return;
+                }
+               
             } catch (Exception e) {
-                Log.e(TAG, "setActionBarUpIndicator error", e);
+                //Log.e(TAG, "setActionBarUpIndicator error", e);
             }
 
             final View home = mActivity.findViewById(android.R.id.home);
@@ -183,13 +186,16 @@ public class DrawerToggle extends android.support.v4.app.ActionBarDrawerToggle {
             try {
                 Method setHomeActionContentDescription = ActionBar.class.getDeclaredMethod(
                     "setHomeActionContentDescription", Integer.TYPE);
-                setHomeActionContentDescription.invoke(mActivity.getSupportActionBar(),
-                    mDrawerLayout.isDrawerOpen(GravityCompat.START) ? mOpenDrawerContentDescRes : mCloseDrawerContentDescRes);
-                
-                mActivity.getSupportActionBar().setSubtitle(mActivity.getSupportActionBar().getSubtitle());
+                if(setHomeActionContentDescription!=null){
+                    setHomeActionContentDescription.invoke(mActivity.getSupportActionBar(),
+                            mDrawerLayout.isDrawerOpen(GravityCompat.START) ? mOpenDrawerContentDescRes : mCloseDrawerContentDescRes);
+                        
+                        mActivity.getSupportActionBar().setSubtitle(mActivity.getSupportActionBar().getSubtitle());
+                }
+
  
             } catch (Exception e) {
-                Log.e(TAG, "setActionBarUpIndicator", e);
+                //Log.e(TAG, "setActionBarUpIndicator", e);
             }
         }
     }
