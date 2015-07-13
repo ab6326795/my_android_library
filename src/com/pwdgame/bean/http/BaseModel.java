@@ -1,5 +1,8 @@
 package com.pwdgame.bean.http;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
+
 public class BaseModel {
 
 	public int code;
@@ -12,6 +15,7 @@ public class BaseModel {
 	
 	@Override
 	public String toString() {
+	
 		return "BaseModel [code=" + code + ", msg=" + msg
 				+ ", isCache=" + isCache + "]";
 	}

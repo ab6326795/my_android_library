@@ -40,8 +40,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
+import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -55,7 +57,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
@@ -100,45 +105,32 @@ public final class Utility {
         return isInstallShortcut;
     }
 
+	 /**
+	  * 创建快捷方式
+	  * @param context
+	  * @param appName
+	  * @param icon
+	  * @param intent
+	  */
+	public static void addShortCutToDesktop(Context context,String appName,Bitmap icon,Intent intent) {
+		// 构建快捷方式的Intent
+/*			Intent intent = new Intent(Intent.ACTION_MAIN);
+			intent.setClassName(context, context.getClass().getName());*/
 
+		Intent addShortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+		// 快捷方式的名称
+		addShortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME,appName);
+		
+		// 添加快捷方式图标
+		addShortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON, icon);
+		// 添加快捷方式的Intent
+		addShortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intent);
+		// duplicate created
+		addShortcut.putExtra("duplicate", false);
+		// 发送广播给launcher
+		context.sendBroadcast(addShortcut);
 
-/*	*//**
-	 * 创建桌面快捷方式，如果原来已经存在返回true，不存在返回false（返回false说明系统是第一次创建）
-	 * 
-	 * @param context
-	 * @return
-	 *//*
-	public static boolean addShortCut(Activity context,String appName,int resIcon) {
-		// 判断是否要添加快捷方式
-		boolean IsCreateShort = SharedPreferenceUtil.getRecordBoolean( "is_create_shortcut");
-
-		if (!IsCreateShort) {
-			// 构建快捷方式的Intent
-			Intent intent = new Intent(Intent.ACTION_MAIN);
-			intent.setClassName(context, context.getClass().getName());
-
-			Intent addShortcut = new Intent(
-					"com.android.launcher.action.INSTALL_SHORTCUT");
-			// 快捷方式的名称
-			addShortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME,appName);
-			// 构建快捷方式中的专门图标
-			Parcelable icon = Intent.ShortcutIconResource.fromContext(context,resIcon);
-			// 添加快捷方式图标
-			addShortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, icon);
-			// 添加快捷方式的Intent
-			addShortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intent);
-			// duplicate created
-			addShortcut.putExtra("duplicate", false);
-			// 发送广播给launcher
-			context.sendBroadcast(addShortcut);
-
-			// 写入记录
-			SharedPreferenceUtil.setRecordBoolean("is_create_shortcut", true);
-			
-		    //Toast.makeText(context, "创建桌面快捷方式成功", Toast.LENGTH_SHORT).show();		
-		}
-		return IsCreateShort;
-	}*/
+	}
 
 	/**
 	 * 返回指定包的CODE（版本号）
@@ -1633,12 +1625,12 @@ public final class Utility {
        return null;
    }
    
-   /**
+/*   *//**
     * 得到状态栏高度
     *
     * @param context
     * @return
-    */
+    *//*
    public  static  int getStatusBarHeight(Activity context){
        int statusHeight = 0;
        Rect frame = new Rect();
@@ -1656,6 +1648,76 @@ public final class Utility {
            }
        }
        return  statusHeight;
-   }
+   }*/
+   
+	 /**
+	  * 检查设备是否有导航栏
+	  * @param activity
+	  * @return
+	  */
+	 @SuppressLint("NewApi") 
+	 public static boolean checkDeviceHasNavigationBar(Context activity) {
+
+			//通过判断设备是否有返回键、菜单键(不是虚拟键,是手机屏幕外的按键)来确定是否有navigation bar
+			boolean hasMenuKey = false;
+			boolean hasBackKey = false;
+			try {
+				hasMenuKey = ViewConfiguration.get(activity).hasPermanentMenuKey();				
+			} catch (java.lang.NoSuchMethodError e) {
+				// TODO: handle exception
+			}
+			try {
+				hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+			} catch (java.lang.NoSuchMethodError e) {
+				// TODO: handle exception
+			}
+
+			if (!hasMenuKey && !hasBackKey) {
+				// 做任何你需要做的,这个设备有一个导航栏
+				return true;
+			}
+			return false;
+		}
+	 
+	 /**
+	  * 获取导航栏高度 ,此方法不会检查导航栏是否存在，直接返回数值。所以可能手机没有显示导航栏，但是高度依然返回
+	  * @param activity
+	  * @return
+	  */
+	 public static int getNavigationBarHeight(Context activity) {
+			Resources resources = activity.getResources();
+			int resourceId = resources.getIdentifier("navigation_bar_height",
+					"dimen", "android");
+			//获取NavigationBar的高度
+			int height = resources.getDimensionPixelSize(resourceId);
+			return height;
+		}
+	 
+
+	 /**
+	  * 获取导航栏高度，此方法会根据手机是否存在导航栏，返回相应的数值
+	  * @param activity
+	  * @return
+	  */
+	 public static int getNavigationBarHeightEx(Context activity){
+		 if(checkDeviceHasNavigationBar(activity)){
+			 return getNavigationBarHeight(activity);
+		 }
+		 return 0;
+	 }
+	 
+	 /**
+	  * 获取状态栏的高度
+	  * @param context
+	  * @return
+	  */
+	 public static int getStatusBarHeight(Context context){
+			Resources resources = context.getResources();
+			int resourceId = resources.getIdentifier("status_bar_height",
+					"dimen", "android");
+			//获取NavigationBar的高度
+			int height = resources.getDimensionPixelSize(resourceId);
+			return height;
+	 }
 }
 	
