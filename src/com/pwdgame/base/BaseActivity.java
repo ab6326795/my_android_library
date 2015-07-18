@@ -2,6 +2,7 @@ package com.pwdgame.base;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
@@ -14,7 +15,7 @@ import com.pwdgame.widget.LoadingDialog;
  * @author xieyuan 20150625
  *
  */
-public abstract class BaseActivity extends FragmentActivity{
+public abstract class BaseActivity extends ActionBarActivity{
 	//是否显示切换动画
 	public boolean bAnimation=false;
 	

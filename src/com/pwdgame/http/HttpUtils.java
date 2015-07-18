@@ -9,6 +9,7 @@ import java.util.Map;
 import android.content.Context;
 
 import com.alibaba.fastjson.JSONObject;
+import com.pwdgame.app.AppConfig;
 import com.pwdgame.cache.XYFileCache;
 import com.pwdgame.secure.MD5;
 import com.pwdgame.util.DeviceInfo;

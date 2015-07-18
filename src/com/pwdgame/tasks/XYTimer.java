@@ -1,8 +1,11 @@
 package com.pwdgame.tasks;
 
 import java.util.Date;
-import java.util.Timer;
-
+/**
+ * 定时器改良版，可以动态调整某个正在进行的Task触发间隔
+ * @author xieyuan
+ *
+ */
 public class XYTimer {
 
     private static final class TimerImpl extends Thread {

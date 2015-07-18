@@ -13,6 +13,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
+import com.pwdgame.app.AppConfig;
 import com.pwdgame.cache.XYFileCache;
 import com.pwdgame.library.BuildConfig;
 import com.pwdgame.util.Logger;

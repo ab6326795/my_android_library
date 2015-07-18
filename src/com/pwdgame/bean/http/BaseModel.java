@@ -1,7 +1,5 @@
 package com.pwdgame.bean.http;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
 
 public class BaseModel {
 

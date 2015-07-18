@@ -24,6 +24,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.manager.ImageLoaderManager;
 import com.pwdgame.bean.ActionBarIcon;
 import com.pwdgame.bean.ActionBarMenuItem;
 import com.pwdgame.library.R;
@@ -50,12 +51,12 @@ public class XYPopMenu {
 	private WindowManager windowManager;
 	private int displayWidth,displayHeight;
 	private OnActionBarMenuOnClick onActionBarMenuOnClick;
+	private android.widget.PopupWindow.OnDismissListener onDismissListener;
 	
 	private int background;
 	private int textColor=Color.BLACK;
 	private int popStyle = R.style.PopupAnimation;
-	private float dimAmount = 0;
-	
+
 	public XYPopMenu(Activity activity){
 		mActivity=activity;
 		inflater=(LayoutInflater)mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -142,22 +143,19 @@ public class XYPopMenu {
                 return false; 
 			}    
          }); */
-		setDimAmount(0.5f);
+		
 	    popupWindow.setTouchable(true);
 	    popupWindow.setFocusable(true);
 	    popupWindow.setOutsideTouchable(true);
 	    popupWindow.setAnimationStyle(popStyle);	    
 	    popupWindow.setContentView(actionView);
+	    
 	}
 	
-	public void setDimAmount(float dimAmount){
-		this.dimAmount = dimAmount;		
-/*		android.view.WindowManager.LayoutParams layoutParams = mActivity.getWindow().getAttributes();
-		layoutParams.flags =  WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-		layoutParams.dimAmount = dimAmount;
-		mActivity.getWindow().setAttributes(layoutParams);*/
-		
-		
+	public void setOnDismissListener(android.widget.PopupWindow.OnDismissListener onDismissListener){
+		this.onDismissListener = onDismissListener;
+		if(this.onDismissListener != null)
+		    popupWindow.setOnDismissListener(this.onDismissListener);
 	}
 	
 	public void setAnimationStyle(int style){
@@ -380,7 +378,7 @@ public class XYPopMenu {
               	   holder.icon.getLayoutParams().height=item.icon.height;
               	   holder.icon.setScaleType(ImageView.ScaleType.FIT_XY);	
               	   
-              	   //ImageLoaderManager.displayImage((String)item.icon.icon, holder.icon);            	   
+              	   ImageLoaderManager.displayImage((String)item.icon.icon, holder.icon);            	   
             	}
             	////////////////////////
             	if(item.icon.reserve!=null&& item.icon.reserve instanceof Integer&&(Integer)item.icon.reserve!=-1){
