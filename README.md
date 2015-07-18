@@ -18,6 +18,27 @@ AsyncTask<Params, Progress, Result> 模型实现 AsyncMockTask，用于兼容低
 6、com.pwdgame.secure
 MD5、Des、Base64加密
 
-7、史上最强的工具包 om.pwdgame.util
+7、史上最强的工具包 om.pwdgame.util ，不是吹，自己看！如： 
+CameraUtil 图片选取（相册、拍照）
+SharedPreferenceUtil 高度封装的SharedPreferences，比比谁的更简单？
+DeviceInfo 设备信息获取类
+Utility 最强的工具类，功能太多了
+
+8、文件IO com.pwdgame.io
+FileUtils
+
+9、文件缓存 com.pwdgame.cache
+XYFileCache
+
+10、Activity管理、全局信息读取 com.pwdgame.app
+ActivityStackManager和 AppConfig
+
+11、动画类 
+com.pwdgame.animation.Rotate3dAnimation 3D旋转效果
+以及网上开源的 com.nineoldandroids
+
+12、对话框类
+com.pwdgame.widget CustomAlertDialog
+LoadingDialog 等 
 
 。。。。。。。。。省略1万字
