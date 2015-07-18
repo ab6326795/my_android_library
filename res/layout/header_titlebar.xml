@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/header_titlebar_root_linear"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/top_bar_height"
+    android:orientation="vertical"
+    android:background="@color/title_bg_color"
+     >
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+       
+        >
+
+        <TextView
+            android:id="@+id/header_titlebar_back_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:drawableLeft="@drawable/contact_detail_title_home_icon_p"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+
+            android:textColor="#008be4"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/header_titlebar_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:text="title"
+            android:textColor="@color/white"
+            android:textSize="20dp" 
+            android:gravity="center_vertical"
+            />
+        <LinearLayout 
+            android:id="@+id/header_titlebar_menu_linear"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal"
+            android:gravity="center"
+            >
+<!--              <TextView
+	            android:id="@+id/add_card_refresh"
+	            android:layout_width="wrap_content"
+	            android:layout_height="fill_parent"
+	          
+	            android:gravity="center_vertical"
+	            android:paddingRight="15dp"
+	            android:text="@string/add_card_str_refresh"
+	            android:textColor="#008be4"
+	            android:textSize="16dp" /> -->
+             
+             
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:background="#ADADAD" 
+        android:layout_alignParentBottom="true"
+        /> 
+
+</RelativeLayout>

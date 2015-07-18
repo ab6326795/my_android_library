@@ -7,7 +7,6 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.pwdgame.library.R;
-import com.pwdgame.util.Logger;
 
 public class LoadingDialog extends AlertDialog {
 
@@ -57,5 +56,24 @@ public class LoadingDialog extends AlertDialog {
     public void setText(int resId) {
         setText(getContext().getResources().getString(resId));
     }
+    public void setTextColor(int color){
+    	tips_loading_msg.setTextColor(color);
+    }
+    
+    public void show(String str){
+    	message = str;
+    	if(isShowing()){
+    		if(tips_loading_msg != null){
+    			tips_loading_msg.setText(message);
+    		}
+    	}else{    		
+        	super.show();	
+    	}    	
+    }
 
+    @Override
+    public void show(){
+    	message = "";
+    	super.show();
+    }
 }

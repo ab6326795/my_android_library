@@ -1,5 +1,6 @@
 package com.pwdgame.view;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,6 @@ import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -24,7 +24,6 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.manager.ImageLoaderManager;
 import com.pwdgame.bean.ActionBarIcon;
 import com.pwdgame.bean.ActionBarMenuItem;
 import com.pwdgame.library.R;
@@ -39,7 +38,7 @@ public class XYPopMenu {
 	private static final String TAG="XYPopMenu";
 
 	private List<ActionBarMenuItem> menuItems=new ArrayList<ActionBarMenuItem>();
-	private Context mContext;
+	private Activity mActivity;
 	private LayoutInflater inflater;
 		
 	private View actionView;
@@ -49,15 +48,17 @@ public class XYPopMenu {
 	private float mScale;
 	
 	private WindowManager windowManager;
-	private int screenW,screenH;
+	private int displayWidth,displayHeight;
 	private OnActionBarMenuOnClick onActionBarMenuOnClick;
 	
 	private int background;
 	private int textColor=Color.BLACK;
+	private int popStyle = R.style.PopupAnimation;
+	private float dimAmount = 0;
 	
-	public XYPopMenu(Context context){
-		mContext=context;
-		inflater=(LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	public XYPopMenu(Activity activity){
+		mActivity=activity;
+		inflater=(LayoutInflater)mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		init();
 	}
 	
@@ -95,29 +96,13 @@ public class XYPopMenu {
 	}
 	
 	
-	public void inflater(int res,Menu menu){
-		XYMenuInflater<ActionBarMenuItem> xyMenuInflater=new XYMenuInflater<ActionBarMenuItem>(mContext);
-		try {
-			menuItems=xyMenuInflater.inflater(res, ActionBarMenuItem.class, menu);
-		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+
 	private void init(){
 		background=R.drawable.trangle_menu_background;//R.drawable.abs__menu_dropdown_panel_holo_dark;
-		windowManager=(WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-		screenW=windowManager.getDefaultDisplay().getWidth();
-		screenH=windowManager.getDefaultDisplay().getHeight();
+		windowManager=(WindowManager) mActivity.getSystemService(Context.WINDOW_SERVICE);
+		displayWidth=windowManager.getDefaultDisplay().getWidth();
+		displayHeight=windowManager.getDefaultDisplay().getHeight() - Utility.getNavigationBarHeightEx(mActivity)
+				- Utility.getStatusBarHeight(mActivity);
 		DisplayMetrics metrics = new DisplayMetrics();
 		windowManager.getDefaultDisplay().getMetrics(metrics);
 		mScale=metrics.scaledDensity;
@@ -142,7 +127,7 @@ public class XYPopMenu {
 	            }  
 	        });  
 
-		popupWindow=new PopupWindow(mContext);
+		popupWindow=new PopupWindow(mActivity);
 /*	    popupWindow.setTouchInterceptor(new View.OnTouchListener() {    
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -157,12 +142,27 @@ public class XYPopMenu {
                 return false; 
 			}    
          }); */
-	    
+		setDimAmount(0.5f);
 	    popupWindow.setTouchable(true);
 	    popupWindow.setFocusable(true);
 	    popupWindow.setOutsideTouchable(true);
-	    popupWindow.setAnimationStyle(R.style.PopupAnimation);	    
+	    popupWindow.setAnimationStyle(popStyle);	    
 	    popupWindow.setContentView(actionView);
+	}
+	
+	public void setDimAmount(float dimAmount){
+		this.dimAmount = dimAmount;		
+/*		android.view.WindowManager.LayoutParams layoutParams = mActivity.getWindow().getAttributes();
+		layoutParams.flags =  WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+		layoutParams.dimAmount = dimAmount;
+		mActivity.getWindow().setAttributes(layoutParams);*/
+		
+		
+	}
+	
+	public void setAnimationStyle(int style){
+		this.popStyle = style;
+		popupWindow.setAnimationStyle(popStyle);
 	}
 	
 	/**
@@ -179,7 +179,7 @@ public class XYPopMenu {
 	
 	public float measureMaxWidth(){
 		Paint paint=new Paint();
-		paint.setTextSize(Utility.dipToPx(mContext, 18));
+		paint.setTextSize(Utility.dipToPx(mActivity, 18));
 		
 		float maxWidth = 0;
 		Rect titleRect=new Rect();
@@ -202,6 +202,7 @@ public class XYPopMenu {
 	}
 	
 	public void show(final View view){
+
 		if(menuItems==null||menuItems.size()<=0)
 			return;
 /*		int firstLength=Math.max(1, menuItems.get(0).titleStr.length());		
@@ -221,7 +222,7 @@ public class XYPopMenu {
 			menuItems.get(0).titleStr=menuItems.get(0).titleStr.toString()+builder.toString();
 		}*/
 		
-	      MenuItemAdapter adapter = new MenuItemAdapter(mContext, menuItems,textColor);
+	      MenuItemAdapter adapter = new MenuItemAdapter(mActivity, menuItems,textColor);
 	      actionListView.setAdapter(adapter);
 	      actionListView.setOnItemClickListener(new ListView.OnItemClickListener() {
 
@@ -237,7 +238,7 @@ public class XYPopMenu {
 	        });
 
        if (view == null) {
-            View parent = ((Activity)mContext).getWindow().getDecorView();
+            View parent = ((Activity)mActivity).getWindow().getDecorView();
             popupWindow.showAtLocation(parent, Gravity.CENTER, 0, 0);
             return;
         }
@@ -245,24 +246,24 @@ public class XYPopMenu {
 		//获取视图位置
 		int[] location=new int[2];
 		view.getLocationOnScreen(location);
-		Rect viewRect=new Rect(location[0],location[1],location[0]+view.getWidth(),location[1]+view.getHeight());
+		Rect viewRect=new Rect(location[0],location[1] ,location[0]+view.getWidth(),location[1]  + view.getHeight());
 		
 		//获取的宽高是第一列的宽高
 		//actionView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 		actionView.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-		int actionHeight=actionView.getMeasuredHeight();
+		int actionHeight=actionView.getMeasuredHeight() * adapter.getCount() +Utility.dipToPx(mActivity, 5);
+	
 		//int actionWidth=(int) (actionView.getMeasuredWidth()*mScale);
 
-		//int dp=Utility.dipToPx(mContext, 200);
+		//int dp=Utility.dipToPx(mActivity, 200);
 		//actionWidth=dp;
-		
-        
-        int actionWidth=(int) (measureMaxWidth()+Utility.dipToPx(mContext, 80));
+
+        int actionWidth=(int) (measureMaxWidth()+Utility.dipToPx(mActivity, 80));
 		
 		//设置POPWINDOW宽高
         popupWindow.setWidth(actionWidth);
         popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);        
-        popupWindow.setBackgroundDrawable(mContext.getResources().getDrawable(background));
+        popupWindow.setBackgroundDrawable(mActivity.getResources().getDrawable(background));
 
        /* actionLinear.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
 
@@ -294,7 +295,7 @@ public class XYPopMenu {
 		 int dyBottom  = screenH - viewRect.bottom; 
 */
         //倒过来，按钮在下，菜单在上
-		 if(viewRect.bottom+actionHeight>screenH){
+		 if(viewRect.bottom+actionHeight>displayHeight){
 			 yPos=viewRect.top-actionHeight;
 		 }else {
 			 //菜单在下
@@ -302,10 +303,8 @@ public class XYPopMenu {
 		 }
 
 		//popupWindow.setAnimationStyle(R.style.PopupAnimation);
-		// 加上下面两行可以用back键关闭popupwindow，否则必须调用dismiss();
-		
-		popupWindow.showAtLocation(view, Gravity.NO_GRAVITY, xPos,yPos);
-		
+		// 加上下面两行可以用back键关闭popupwindow，否则必须调用dismiss();		
+		popupWindow.showAtLocation(view, Gravity.NO_GRAVITY, xPos,yPos);		
 	}
 	
     /**
@@ -321,6 +320,22 @@ public class XYPopMenu {
     	if(popupWindow != null && popupWindow.isShowing())
     		return true;
     	return false;
+    }
+    
+    public View getPopupView(){
+    	
+    	Field field = null;
+    	View view = null;
+		try {
+			field = popupWindow.getClass().getDeclaredField("mPopupView");
+			field.setAccessible(true);
+			view = (View) field.get(popupWindow);
+		} catch( Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return view;
+    	
     }
     
     private class MenuItemAdapter extends ArrayAdapter<ActionBarMenuItem> {
@@ -365,7 +380,7 @@ public class XYPopMenu {
               	   holder.icon.getLayoutParams().height=item.icon.height;
               	   holder.icon.setScaleType(ImageView.ScaleType.FIT_XY);	
               	   
-              	   ImageLoaderManager.displayImage((String)item.icon.icon, holder.icon);            	   
+              	   //ImageLoaderManager.displayImage((String)item.icon.icon, holder.icon);            	   
             	}
             	////////////////////////
             	if(item.icon.reserve!=null&& item.icon.reserve instanceof Integer&&(Integer)item.icon.reserve!=-1){

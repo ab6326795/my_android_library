@@ -15,11 +15,17 @@ public final class R {
         public static int abc_slide_in_top=0x7f040003;
         public static int abc_slide_out_bottom=0x7f040004;
         public static int abc_slide_out_top=0x7f040005;
-        public static int loading=0x7f040006;
-        public static int menu_in=0x7f040007;
-        public static int menu_out=0x7f040008;
-        public static int xypopllist_in=0x7f040009;
-        public static int xypopllist_out=0x7f04000a;
+        public static int activity_bottom_in=0x7f040006;
+        public static int activity_bottom_out=0x7f040007;
+        public static int activity_left_in=0x7f040008;
+        public static int activity_left_out=0x7f040009;
+        public static int activity_right_in=0x7f04000a;
+        public static int activity_right_out=0x7f04000b;
+        public static int loading=0x7f04000c;
+        public static int menu_in=0x7f04000d;
+        public static int menu_out=0x7f04000e;
+        public static int xypopllist_in=0x7f04000f;
+        public static int xypopllist_out=0x7f040010;
     }
     public static final class attr {
         /**  Custom divider drawable to use for elements in the action bar. 
@@ -1001,7 +1007,7 @@ containing a value of this type.
         public static int abc_split_action_bar_is_narrow=0x7f050002;
     }
     public static final class color {
-        public static int abc_search_url_text_holo=0x7f060053;
+        public static int abc_search_url_text_holo=0x7f060055;
         public static int abc_search_url_text_normal=0x7f060000;
         public static int abc_search_url_text_pressed=0x7f060002;
         public static int abc_search_url_text_selected=0x7f060001;
@@ -1081,6 +1087,7 @@ containing a value of this type.
         /** 亮粉红色
          */
         public static int magenta=0x7f06000b;
+        public static int main_bg_color=0x7f060054;
         /** 蓟色 
          */
         public static int mediumblue=0x7f060016;
@@ -1131,6 +1138,7 @@ containing a value of this type.
         /** 暗深红色 
          */
         public static int thistle=0x7f060015;
+        public static int title_bg_color=0x7f060053;
         /**  透明 
          */
         public static int translucent=0x7f06001d;
@@ -1232,12 +1240,12 @@ containing a value of this type.
         public static int abc_search_view_text_min_width=0x7f07000c;
         public static int button_size=0x7f070011;
         public static int large_title_size=0x7f070014;
-        public static int ldrawer_barSize=0x7f070021;
-        public static int ldrawer_drawableSize=0x7f070020;
-        public static int ldrawer_gapBetweenBars=0x7f070024;
-        public static int ldrawer_middleBarArrowSize=0x7f070025;
-        public static int ldrawer_thickness=0x7f070023;
-        public static int ldrawer_topBottomBarArrowSize=0x7f070022;
+        public static int ldrawer_barSize=0x7f070022;
+        public static int ldrawer_drawableSize=0x7f070021;
+        public static int ldrawer_gapBetweenBars=0x7f070025;
+        public static int ldrawer_middleBarArrowSize=0x7f070026;
+        public static int ldrawer_thickness=0x7f070024;
+        public static int ldrawer_topBottomBarArrowSize=0x7f070023;
         public static int little_title_size=0x7f070012;
         public static int small_small_small_text_size=0x7f07001a;
         public static int small_small_text_size=0x7f070019;
@@ -1249,6 +1257,7 @@ containing a value of this type.
         public static int text_size=0x7f070017;
         public static int textview_line_spacing=0x7f07001f;
         public static int title_size=0x7f070013;
+        public static int top_bar_height=0x7f070020;
         public static int xlarge_title_size=0x7f070015;
         public static int xxlarge_title_size=0x7f070016;
     }
@@ -1342,39 +1351,41 @@ containing a value of this type.
         public static int abc_textfield_searchview_right_holo_light=0x7f020056;
         public static int button_gray_white_selector=0x7f020057;
         public static int button_red_selector=0x7f020058;
-        public static int custom_dialog_button_selector=0x7f020059;
-        public static int del_icon=0x7f02005a;
-        public static int detailicon_default=0x7f02005b;
-        public static int dialog_bg=0x7f02005c;
-        public static int dialog_button_press=0x7f02005d;
-        public static int gray_login_normal=0x7f02005e;
-        public static int gray_login_press=0x7f02005f;
-        public static int guide_dot_black=0x7f020060;
-        public static int guide_dot_white=0x7f020061;
-        public static int ic_drawer=0x7f020062;
-        public static int ic_pulltorefresh_arrow=0x7f020063;
-        public static int item_selector=0x7f020064;
-        public static int item_selector2=0x7f020065;
-        public static int lc_button_r=0x7f020066;
-        public static int lc_button_r_press=0x7f020067;
-        public static int line=0x7f020068;
-        public static int list_divider_holo_light=0x7f020069;
-        public static int loading_0=0x7f02006a;
-        public static int loading_1=0x7f02006b;
-        public static int loading_2=0x7f02006c;
-        public static int loading_3=0x7f02006d;
-        public static int loading_4=0x7f02006e;
-        public static int loading_5=0x7f02006f;
-        public static int loading_6=0x7f020070;
-        public static int loading_7=0x7f020071;
-        public static int sidebar_background=0x7f020072;
-        public static int tips_bg=0x7f020073;
-        public static int tips_error=0x7f020074;
-        public static int tips_smile=0x7f020075;
-        public static int tips_success=0x7f020076;
-        public static int tips_warning=0x7f020077;
-        public static int trangle_menu_background=0x7f020078;
-        public static int wb_scrollbar=0x7f020079;
+        public static int contact_detail_title_home_icon_n=0x7f020059;
+        public static int contact_detail_title_home_icon_p=0x7f02005a;
+        public static int custom_dialog_button_selector=0x7f02005b;
+        public static int del_icon=0x7f02005c;
+        public static int detailicon_default=0x7f02005d;
+        public static int dialog_bg=0x7f02005e;
+        public static int dialog_button_press=0x7f02005f;
+        public static int gray_login_normal=0x7f020060;
+        public static int gray_login_press=0x7f020061;
+        public static int guide_dot_black=0x7f020062;
+        public static int guide_dot_white=0x7f020063;
+        public static int ic_drawer=0x7f020064;
+        public static int ic_pulltorefresh_arrow=0x7f020065;
+        public static int item_selector=0x7f020066;
+        public static int item_selector2=0x7f020067;
+        public static int lc_button_r=0x7f020068;
+        public static int lc_button_r_press=0x7f020069;
+        public static int line=0x7f02006a;
+        public static int list_divider_holo_light=0x7f02006b;
+        public static int loading_0=0x7f02006c;
+        public static int loading_1=0x7f02006d;
+        public static int loading_2=0x7f02006e;
+        public static int loading_3=0x7f02006f;
+        public static int loading_4=0x7f020070;
+        public static int loading_5=0x7f020071;
+        public static int loading_6=0x7f020072;
+        public static int loading_7=0x7f020073;
+        public static int sidebar_background=0x7f020074;
+        public static int tips_bg=0x7f020075;
+        public static int tips_error=0x7f020076;
+        public static int tips_smile=0x7f020077;
+        public static int tips_success=0x7f020078;
+        public static int tips_warning=0x7f020079;
+        public static int trangle_menu_background=0x7f02007a;
+        public static int wb_scrollbar=0x7f02007b;
     }
     public static final class id {
         public static int action_bar=0x7f09001f;
@@ -1420,11 +1431,15 @@ containing a value of this type.
         public static int end=0x7f090017;
         public static int expand_activities_button=0x7f090029;
         public static int expanded_menu=0x7f09002f;
-        public static int head_arrowImageView=0x7f090053;
-        public static int head_contentLayout=0x7f090052;
-        public static int head_lastUpdatedTextView=0x7f090056;
-        public static int head_progressBar=0x7f090054;
-        public static int head_tipsTextView=0x7f090055;
+        public static int head_arrowImageView=0x7f090057;
+        public static int head_contentLayout=0x7f090056;
+        public static int head_lastUpdatedTextView=0x7f09005a;
+        public static int head_progressBar=0x7f090058;
+        public static int head_tipsTextView=0x7f090059;
+        public static int header_titlebar_back_tv=0x7f090052;
+        public static int header_titlebar_menu_linear=0x7f090054;
+        public static int header_titlebar_root_linear=0x7f090051;
+        public static int header_titlebar_title_tv=0x7f090053;
         public static int home=0x7f090000;
         public static int homeAsUp=0x7f09000a;
         public static int icon=0x7f09002d;
@@ -1433,7 +1448,7 @@ containing a value of this type.
         public static int left=0x7f09001b;
         public static int listMode=0x7f090006;
         public static int list_item=0x7f09002c;
-        public static int loadingdialog_msg=0x7f090051;
+        public static int loadingdialog_msg=0x7f090055;
         public static int middle=0x7f090018;
         public static int never=0x7f090012;
         public static int none=0x7f090019;
@@ -1460,16 +1475,16 @@ containing a value of this type.
         public static int submit_area=0x7f09003c;
         public static int tabMode=0x7f090008;
         public static int title=0x7f09002e;
-        public static int toast_layout_icon=0x7f090057;
-        public static int toast_layout_msg=0x7f090058;
+        public static int toast_layout_icon=0x7f09005b;
+        public static int toast_layout_msg=0x7f09005c;
         public static int top_action_bar=0x7f090023;
         public static int up=0x7f090024;
         public static int useLogo=0x7f09000e;
         public static int withText=0x7f090013;
-        public static int xypoplist_bottom_linear=0x7f09005a;
-        public static int xypoplist_cancel=0x7f09005c;
-        public static int xypoplist_item_button=0x7f090059;
-        public static int xypoplist_listview=0x7f09005b;
+        public static int xypoplist_bottom_linear=0x7f09005e;
+        public static int xypoplist_cancel=0x7f090060;
+        public static int xypoplist_item_button=0x7f09005d;
+        public static int xypoplist_listview=0x7f09005f;
     }
     public static final class integer {
         /**  The maximum number of action buttons that should be permitted within
@@ -1525,12 +1540,13 @@ containing a value of this type.
         public static int custom_dialog_layout=0x7f030019;
         public static int custom_dialog_listview_item=0x7f03001a;
         public static int custom_dialog_listview_item2=0x7f03001b;
-        public static int loadingdialog_layout=0x7f03001c;
-        public static int pull_to_refresh_head=0x7f03001d;
-        public static int support_simple_spinner_dropdown_item=0x7f03001e;
-        public static int toast_layout=0x7f03001f;
-        public static int xypoplist_item=0x7f030020;
-        public static int xypoplist_layout=0x7f030021;
+        public static int header_titlebar=0x7f03001c;
+        public static int loadingdialog_layout=0x7f03001d;
+        public static int pull_to_refresh_head=0x7f03001e;
+        public static int support_simple_spinner_dropdown_item=0x7f03001f;
+        public static int toast_layout=0x7f030020;
+        public static int xypoplist_item=0x7f030021;
+        public static int xypoplist_layout=0x7f030022;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 

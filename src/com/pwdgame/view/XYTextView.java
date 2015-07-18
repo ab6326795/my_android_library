@@ -33,5 +33,5 @@ public class XYTextView extends TextView{
     		setText(str);
     	}
     	
-    }
+    }       
 }

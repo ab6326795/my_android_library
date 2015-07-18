@@ -98,4 +98,7 @@
      <color name="talk_innermessage_line_color">#ffe3e3e3</color>
      
      <color name="ldrawer_color">#FFFFFF</color>
+     
+    <color name="title_bg_color">#ff01c676</color>
+    <color name="main_bg_color">#F1F1F1</color> <!-- 主背景颜色值 -->
 </resources>

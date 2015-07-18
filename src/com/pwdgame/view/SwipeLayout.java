@@ -134,11 +134,19 @@ public class SwipeLayout  extends FrameLayout {
     
     public void replaceLayer(Activity activity) {             
         mActivity = activity;       
-        setClickable(true);
+//        setClickable(true);
+//        setFocusable(true);
+//        setFocusableInTouchMode(true);
+//        
         backgroundLayer = new View(activity);
         backgroundLayer.setBackgroundColor(layerColor);
         final ViewGroup root = (ViewGroup) activity.getWindow().getDecorView();
         contentView = root.getChildAt(0);
+        
+        //要加这个，否则没有view 的linear等无法接收move事件
+        contentView.setFocusable(true);
+        contentView.setClickable(true);
+        contentView.setFocusableInTouchMode(true);
         //在Android5.0上，content的高度不再是屏幕高度，而是变成了Activity高度，比屏幕高度低一些，
         //如果this.addView(content),就会使用以前的params，这样content会像root一样比content高出一部分，导致底部空出一部分
         //在装有Android 5.0的Nexus5上，root,SwipeLayout和content的高度分别是1920、1776、1632，144的等差数列……
@@ -161,19 +169,23 @@ public class SwipeLayout  extends FrameLayout {
     	
         int action = event.getAction();
         switch (action) {
-            case MotionEvent.ACTION_DOWN:                   
+            case MotionEvent.ACTION_DOWN:   
+            	//Logger.debug("debug --");
             	lastX = x;
             	lastY = y;
+
                 break;
-            case MotionEvent.ACTION_MOVE:                  
-                 if(Math.abs(x - lastX) > Math.abs(y - lastY) && x < mSwipeEdgeWidth){
-                	 canSwipe = true;
-                     
-                 }
+            case MotionEvent.ACTION_MOVE:  
+            	//Logger.debug("debug ++");
+                
+            	if (Math.abs(x - lastX) > Math.abs(y - lastY) && x > lastX &&lastX < mSwipeEdgeWidth){
+            		canSwipe = true;
+            	}            		
+            	
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-            	
+            	//Logger.debug("debug +-");
                 canSwipe = false;
                 break;
             default:
@@ -215,12 +227,18 @@ public class SwipeLayout  extends FrameLayout {
             
             int action = event.getAction();
             float x = event.getX();
-
+            float y = event.getY();
             switch (action) {
                 case MotionEvent.ACTION_DOWN:                   
                     lastX = x;
-                    break;
-                case MotionEvent.ACTION_MOVE:                  
+                    //Logger.debug("debug A");
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                	//Logger.debug("debug B");
+                	//不是从左到右滑
+/*                	if (Math.abs(x - lastX) < Math.abs(y - lastY) || x < lastX)
+                		return super.onTouchEvent(event);
+                	*/
                     float dx = x - lastX;
                     if (ViewHelper.getX(contentView) + dx < 0) {
                         setContentX(0);
@@ -228,10 +246,11 @@ public class SwipeLayout  extends FrameLayout {
                         setContentX(ViewHelper.getX(contentView) + dx);
                     }
                     lastX = x;
-                    
-                    break;
+                    //Logger.debug("debug B end");
+                    return true;
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
+                	//Logger.debug("debug C");
                 	swipeByDistanceX();
                 	releaseVelocityTracker();
                     canSwipe = false;

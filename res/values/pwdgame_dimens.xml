@@ -17,5 +17,5 @@
     <dimen name="talk_dialog_list_item_size">18dp</dimen>
     
     <dimen name="textview_line_spacing">0dp</dimen>
-    
+    <dimen name="top_bar_height">42dp</dimen>
 </resources>
